@@ -1,0 +1,23 @@
+{
+  "name": "rides-arrangement",
+  "version": "1.0.0",
+  "description": "Arrange rides",
+  "homepage": "https://github.com/ThePotatoArchivist/rides-arrangement#readme",
+  "bugs": {
+    "url": "https://github.com/ThePotatoArchivist/rides-arrangement/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThePotatoArchivist/rides-arrangement.git"
+  },
+  "license": "MIT",
+  "author": "ThePotatoArchivist",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
