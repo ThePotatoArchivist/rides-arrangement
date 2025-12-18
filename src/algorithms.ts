@@ -67,4 +67,25 @@ const sloping: ArrangementSolver = <P>(input: ArrangementInput<P>, objective: Ob
     }
 }
 
-export { bruteForce, sloping }
+function repeated(attempts: number, solver: ArrangementSolver): ArrangementSolver {
+    return <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => {
+        let bestArrangement: Arrangement<P>
+        let bestScore = 0
+        
+        for (let i = 0; i < attempts; i++) {
+            const arrangement = solver(input, objective)
+            const score = objective(arrangement)
+            if (score > bestScore) {
+                bestArrangement = arrangement
+                bestScore = score
+            }
+        }
+        
+        console.log(`Completed ${attempts} attempts`)
+        console.log(`Best Score: ${bestScore}`)
+        
+        return bestArrangement!
+    } 
+}
+
+export { bruteForce, sloping, repeated }

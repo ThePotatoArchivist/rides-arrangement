@@ -50,5 +50,5 @@ const objective = compileObjective([
     [new GroupingCriterion(input, person => person.location), 1, true],
     [new GroupingCriterion(input, person => person.locationGroup), 2, true],
 ])
-const result = algorithms.sloping(input, objective)
+const result = algorithms.repeated(100, algorithms.sloping)(input, objective)
 console.log(tabulate(transposeUneven(result.map(car => [...occupantsOf(car).map(person => person.name)]), '')))
