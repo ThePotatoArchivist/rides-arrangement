@@ -1,6 +1,6 @@
-import { distinct, sum } from "./util/iterators.js";
+import { distinct, sum, union } from "./util/iterators.js";
 import { Arrangement, ArrangementInput, occupantsOf } from "./data/model.js";
-import { compileObjective, Criterion } from './data/objective.js';
+import { Criterion } from './data/objective.js';
 
 class GroupingCriterion<P, T extends string> extends Criterion<P> {
     readonly personCount: number
@@ -22,4 +22,19 @@ class GroupingCriterion<P, T extends string> extends Criterion<P> {
     }
 }
 
-export { GroupingCriterion };
+class SeparationCriterion<P> extends Criterion<P> {
+    constructor(readonly separate: Set<P>) {
+        super()
+    }
+
+    getRawScore(arrangement: Arrangement<P>): number {
+        return arrangement
+            .map(car => this.separate.intersection(new Set(occupantsOf(car))))
+            .filter(set => set.size > 1)
+            .reduce(union())
+            .size
+            / this.separate.size
+    }
+}
+
+export { GroupingCriterion, SeparationCriterion };

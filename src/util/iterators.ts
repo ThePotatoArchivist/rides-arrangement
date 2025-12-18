@@ -1,11 +1,12 @@
 type Collector<T, U> = (previous: U, current: T) => U
+type Combiner<T> = Collector<T, T>
 
-function minBy<T>(getValue: (item: T) => number, copier?: (value: T) => T): Collector<T, T> {
+function minBy<T>(getValue: (item: T) => number, copier?: (value: T) => T): Combiner<T> {
     return (previous, current) => 
         getValue(current) < getValue(previous) ? copier?.(current) ?? current : previous
 }
 
-function maxBy<T>(getValue: (item: T) => number, copier?: (value: T) => T): Collector<T, T> {
+function maxBy<T>(getValue: (item: T) => number, copier?: (value: T) => T): Combiner<T> {
     return (previous, current) => 
         getValue(current) > getValue(previous) ? copier?.(current) ?? current : previous
 }
@@ -21,9 +22,13 @@ function distinct<T>(): Collector<T, Set<T>> {
     }
 }
 
-const min: Collector<number, number> = (previous, current) => Math.min(previous, current)
-const max: Collector<number, number> = (previous, current) => Math.max(previous, current)
-const sum: Collector<number, number> = (previous, current) => previous + current
+const min: Combiner<number> = (previous, current) => Math.min(previous, current)
+const max: Combiner<number> = (previous, current) => Math.max(previous, current)
+const sum: Combiner<number> = (previous, current) => previous + current
+
+function union<T>(): Combiner<Set<T>> {
+    return (previous, current) => previous.union(current)
+}
 
 function associateWith<K, V>(mapper: (key: K) => V): Collector<K, Map<K, V>> {
     return (previous, current) => {
@@ -42,4 +47,4 @@ function logEvery<T>(frequency: number): (value: T) => T {
 }
 
 
-export { minBy, maxBy, compareBy, distinct, min, max, sum, associateWith, logEvery }
+export { minBy, maxBy, compareBy, distinct, min, max, sum, union, associateWith, logEvery }
