@@ -3,13 +3,14 @@
 // Way to build a reward function from that
 // Procedure to optimize
 
-import { compileObjective, GroupingCriterion } from "./criteria.js";
+import { GroupingCriterion } from "./criteria.js";
 import { associateWith, max } from "./util/iterators.js";
-import { ArrangementInput, occupantsOf } from "./model.js";
+import { ArrangementInput, occupantsOf } from "./data/model.js";
 import parseCsv from 'neat-csv'
 import fs from 'fs'
 import { range } from './util/counting.js';
 import { repeated, sloping } from './algorithms/sloping.js';
+import { compileObjective } from './data/objective.js';
 
 function transposeUneven<T>(table: T[][], defaultValue: T): T[][] {
     return range(table.values().map(row => row.length).reduce(max)).map(column => table.map(row => row[column] ?? defaultValue)).toArray()

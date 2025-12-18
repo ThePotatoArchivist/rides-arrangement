@@ -1,22 +1,6 @@
 import { distinct, sum } from "./util/iterators.js";
-import { Arrangement, ArrangementInput, occupantsOf } from "./model.js";
-
-type ObjectiveFunction<P> = (arrangement: Arrangement<P>) => number
-
-type ArrangementSolver = <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => Arrangement<P>
-
-function compileObjective<P>(criteria: [criterion: Criterion<P>, weight: number, inverted: boolean][]): (arrangement: Arrangement<P>) => number {
-    return arrangement => criteria.values().map(([criterion, weight, inverted]) => criterion.getScore(arrangement, weight, inverted)).reduce(sum)
-}
-
-abstract class Criterion<P> {
-    abstract getRawScore(arrangement: Arrangement<P>): number
-    
-    getScore(arrangement: Arrangement<P>, weight: number, inverted: boolean) {
-        const rawScore = this.getRawScore(arrangement)
-        return weight * (inverted ? 1 - rawScore : rawScore)
-    }
-}
+import { Arrangement, ArrangementInput, occupantsOf } from "./data/model.js";
+import { compileObjective, Criterion } from './data/objective.js';
 
 class GroupingCriterion<P, T extends string> extends Criterion<P> {
     readonly personCount: number
@@ -38,4 +22,4 @@ class GroupingCriterion<P, T extends string> extends Criterion<P> {
     }
 }
 
-export { Criterion, GroupingCriterion, ArrangementSolver, ObjectiveFunction, compileObjective }
+export { GroupingCriterion };
