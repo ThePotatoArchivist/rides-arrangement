@@ -44,24 +44,22 @@ function* combinations<T>(values: T[], size: number) {
     }
 }
 
-function* groups<T>(values: T[], sizes: number[]): Generator<T[][]> {
-    if (sizes.length == 0) {
+function* groups<T>(values: T[], sizes: number[], sizeIndex: number = 0): Generator<T[][]> {
+    if (sizeIndex >= sizes.length) {
         yield []
         return
     }
     
-    yield* combinations(values, sizes[0])
-        .flatMap(car => {
-            const remaining = values.filter(e => !car.includes(e))
-            return groups(remaining, sizes.slice(1)).map(others => [[...car], ...others])
-        })
-    }
+    yield* combinations(values, sizes[sizeIndex])
+        .flatMap(car => groups(values.filter(e => !car.includes(e)), sizes, sizeIndex + 1)
+            .map(others => [car, ...others]))
+}
 
 function bruteForce(input: ArrangementInput, criteria: Criteria): Arrangement {
     return groups(input.passengers, input.drivers.map(driver => driver.capacity))
             .map(logEvery(1000000))
             .map(cars => cars.map<Car>((car, index) => ({ driver: input.drivers[index], passengers: car })))
-            .reduce(minBy(arrangement => criteria.getRawScore(arrangement)))
+            .reduce(minBy(arrangement => criteria.getRawScore(arrangement), cars => cars.map(({driver, passengers}) => ({driver, passengers: [...passengers]}))))
 }
 
 export { bruteForce, permutations, combinations, groups }
