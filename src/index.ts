@@ -4,16 +4,16 @@
 // Procedure to optimize
 
 import { bruteForce } from "./algorithms.js";
-import { GroupingCriteria } from "./criteria.js";
-import { max } from "./iterators.js";
+import { compileObjective, GroupingCriteria } from "./criteria.js";
+import { distinct, max } from "./iterators.js";
 import { ArrangementInput, occupantsOf, Person } from "./model.js";
 
 function transposeUneven<T>(table: T[][], defaultValue: T): T[][] {
-    return [...Array(table.values().map(row => row.length).reduce(max)).keys().map(column => table.map(row => row[column] ?? defaultValue))]
+    return Array(table.values().map(row => row.length).reduce(max)).keys().map(column => table.map(row => row[column] ?? defaultValue)).toArray()
 }
 
 function tabulate(table: string[][]) {
-    const widths = [...table[0].values().map((_, column) => table.map(row => row[column].length).reduce(max))]
+    const widths = table[0].values().map((_, column) => table.map(row => row[column].length).reduce(max)).toArray()
     return table.map(row => row.map((value, column) => value.padEnd(widths[column], ' ')).join('  ')).join('\n')
 }
 
@@ -32,5 +32,5 @@ const input: ArrangementInput = {
     passengers: people.filter(e => e.capacity == 0),
 }
 
-const result = bruteForce(input, new GroupingCriteria(person => (person as any).location))
+const result = bruteForce(input, compileObjective([[new GroupingCriteria(input, person => (person as any).location), 1, true]]))
 console.log(tabulate(transposeUneven(result.map(car => [...occupantsOf(car).map(person => person.name)]), '')))

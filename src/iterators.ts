@@ -5,9 +5,9 @@ function minBy<T>(getValue: (item: T) => number, copier?: (value: T) => T): Coll
         getValue(current) < getValue(previous) ? copier?.(current) ?? current : previous
 }
 
-function maxBy<T>(getValue: (item: T) => number): Collector<T, T> {
+function maxBy<T>(getValue: (item: T) => number, copier?: (value: T) => T): Collector<T, T> {
     return (previous, current) => 
-        getValue(current) > getValue(previous) ? current : previous
+        getValue(current) > getValue(previous) ? copier?.(current) ?? current : previous
 }
 
 function compareBy<T>(getValue: (item: T) => number): (a: T, b: T) => number {

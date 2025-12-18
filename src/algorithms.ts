@@ -1,6 +1,6 @@
-import { Criteria } from "./criteria.js";
-import { compareBy, logEvery, minBy } from "./iterators.js";
-import { Arrangement, ArrangementInput, Car } from "./model.js";
+import { ArrangementSolver } from "./criteria.js";
+import { compareBy, logEvery, maxBy } from "./iterators.js";
+import { Car } from "./model.js";
 
 function* permutations<T>(values: T[]) {
     const indices = new Map(values.entries().map(([index, value]) => [value, index]))
@@ -55,11 +55,11 @@ function* groups<T>(values: T[], sizes: number[], sizeIndex: number = 0): Genera
             .map(others => [car, ...others]))
 }
 
-function bruteForce(input: ArrangementInput, criteria: Criteria): Arrangement {
+const bruteForce: ArrangementSolver = (input, objective) => {
     return groups(input.passengers, input.drivers.map(driver => driver.capacity))
             .map(logEvery(1000000))
             .map(cars => cars.map<Car>((car, index) => ({ driver: input.drivers[index], passengers: car })))
-            .reduce(minBy(arrangement => criteria.getRawScore(arrangement), cars => cars.map(({driver, passengers}) => ({driver, passengers: [...passengers]}))))
+            .reduce(maxBy(arrangement => objective(arrangement), cars => cars.map(({driver, passengers}) => ({driver, passengers: [...passengers]}))))
 }
 
 export { bruteForce, permutations, combinations, groups }
