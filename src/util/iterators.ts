@@ -46,5 +46,15 @@ function logEvery<T>(frequency: number): (value: T) => T {
     }
 }
 
+function range(end: number): Generator<number>
+function range(start: number, end: number): Generator<number>
+function range(start: number, end: number, step: number): Generator<number>
+function* range(a: number, b?: number, step: number = 1): Generator<number> {
+    const start = b === undefined ? 0 : a
+    const end = b ?? a
+    const backwards = step < 0
+    for (let i = start; backwards ? i > end : i < end; i++)
+        yield i
+}
 
-export { minBy, maxBy, compareBy, distinct, min, max, sum, union, associateWith, logEvery }
+export { minBy, maxBy, compareBy, distinct, min, max, sum, union, associateWith, logEvery, range }

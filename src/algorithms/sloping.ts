@@ -1,6 +1,7 @@
-import { combinations, range } from '../util/counting.js';
+import { combinations } from '../util/counting.js';
 import { ArrangementSolver, ObjectiveFunction } from "../data/objective.js";
 import { Arrangement, ArrangementInput, Car } from '../data/model.js';
+import { range } from '../util/iterators.js';
 
 
 function draw<T>(values: T[]) {

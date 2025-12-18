@@ -53,15 +53,4 @@ function* groups<T>(values: T[], sizes: number[], offset: number = 0): Generator
             .map(others => [car, ...others]))
 }
 
-function range(end: number): Generator<number>
-function range(start: number, end: number): Generator<number>
-function range(start: number, end: number, step: number): Generator<number>
-function* range(a: number, b?: number, step: number = 1): Generator<number> {
-    const start = b === undefined ? 0 : a
-    const end = b ?? a
-    const backwards = step < 0
-    for (let i = start; backwards ? i > end : i < end; i++)
-        yield i
-}
-
-export { permutations, combinations, groups, range }
+export { permutations, combinations, groups }

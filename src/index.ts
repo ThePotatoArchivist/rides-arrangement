@@ -4,11 +4,10 @@
 // Procedure to optimize
 
 import { GroupingCriterion } from "./criteria.js";
-import { associateWith, max } from "./util/iterators.js";
+import { associateWith, max, range } from "./util/iterators.js";
 import { ArrangementInput, occupantsOf } from "./data/model.js";
 import parseCsv from 'neat-csv'
 import fs from 'fs'
-import { range } from './util/counting.js';
 import { repeated, sloping } from './algorithms/sloping.js';
 import { compileObjective } from './data/objective.js';
 
