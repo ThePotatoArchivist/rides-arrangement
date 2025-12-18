@@ -1,16 +1,7 @@
-import { combinations, groups, range } from './counting.js';
-import { ArrangementSolver, ObjectiveFunction } from "./criteria.js";
-import { logEvery, maxBy } from "./iterators.js";
-import { Arrangement, ArrangementInput, Car } from './model.js';
+import { combinations, range } from '../util/counting.js';
+import { ArrangementSolver, ObjectiveFunction } from "../criteria.js";
+import { Arrangement, ArrangementInput, Car } from '../model.js';
 
-
-const bruteForce: ArrangementSolver = <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => {
-    const drivers = input.drivers.keys().toArray()
-    return groups(input.passengers, input.drivers.values().toArray())
-            .map(logEvery(1000000))
-            .map(cars => cars.map((car, index) => ({ driver: drivers[index], passengers: car })))
-            .reduce(maxBy(arrangement => objective(arrangement), cars => cars.map(({driver, passengers}) => ({driver, passengers: [...passengers]}))))
-}
 
 function draw<T>(values: T[]) {
     return values.splice(Math.floor(values.length * Math.random()), 1)[0]
@@ -88,4 +79,4 @@ function repeated(attempts: number, solver: ArrangementSolver): ArrangementSolve
     } 
 }
 
-export { bruteForce, sloping, repeated }
+export { sloping, repeated }

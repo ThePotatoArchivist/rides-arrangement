@@ -1,4 +1,4 @@
-import { distinct, sum } from "./iterators.js";
+import { distinct, sum } from "./util/iterators.js";
 import { Arrangement, ArrangementInput, occupantsOf } from "./model.js";
 
 type ObjectiveFunction<P> = (arrangement: Arrangement<P>) => number

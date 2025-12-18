@@ -3,13 +3,13 @@
 // Way to build a reward function from that
 // Procedure to optimize
 
-import * as algorithms from "./algorithms.js";
 import { compileObjective, GroupingCriterion } from "./criteria.js";
-import { associateWith, max } from "./iterators.js";
+import { associateWith, max } from "./util/iterators.js";
 import { ArrangementInput, occupantsOf } from "./model.js";
 import parseCsv from 'neat-csv'
 import fs from 'fs'
-import { range } from './counting.js';
+import { range } from './util/counting.js';
+import { repeated, sloping } from './algorithms/sloping.js';
 
 function transposeUneven<T>(table: T[][], defaultValue: T): T[][] {
     return range(table.values().map(row => row.length).reduce(max)).map(column => table.map(row => row[column] ?? defaultValue)).toArray()
@@ -50,5 +50,5 @@ const objective = compileObjective([
     [new GroupingCriterion(input, person => person.location), 1, true],
     [new GroupingCriterion(input, person => person.locationGroup), 2, true],
 ])
-const result = algorithms.repeated(100, algorithms.sloping)(input, objective)
+const result = repeated(100, sloping)(input, objective)
 console.log(tabulate(transposeUneven(result.map(car => [...occupantsOf(car).map(person => person.name)]), '')))
