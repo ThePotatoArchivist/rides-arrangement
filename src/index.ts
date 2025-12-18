@@ -9,11 +9,11 @@ import { max } from "./iterators.js";
 import { ArrangementInput, occupantsOf, Person } from "./model.js";
 
 function transposeUneven<T>(table: T[][], defaultValue: T): T[][] {
-    return [...Array(table[Symbol.iterator]().map(row => row.length).reduce(max)).keys().map(column => table.map(row => row[column] ?? defaultValue))]
+    return [...Array(table.values().map(row => row.length).reduce(max)).keys().map(column => table.map(row => row[column] ?? defaultValue))]
 }
 
 function tabulate(table: string[][]) {
-    const widths = table[0].map((_, column) => table.map(row => row[column].length).reduce(max))
+    const widths = [...table[0].values().map((_, column) => table.map(row => row[column].length).reduce(max))]
     return table.map(row => row.map((value, column) => value.padEnd(widths[column], ' ')).join('  ')).join('\n')
 }
 

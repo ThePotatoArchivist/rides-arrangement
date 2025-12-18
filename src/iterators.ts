@@ -25,4 +25,14 @@ const min: Collector<number, number> = (previous, current) => Math.min(previous,
 const max: Collector<number, number> = (previous, current) => Math.max(previous, current)
 const sum: Collector<number, number> = (previous, current) => previous + current
 
-export { minBy, maxBy, compareBy, distinct, min, max, sum }
+function logEvery<T>(frequency: number): (value: T) => T {
+    let iteration = 0
+    return value => {
+        if (iteration % frequency == 0) console.log(iteration)
+        iteration++
+        return value
+    }
+}
+
+
+export { minBy, maxBy, compareBy, distinct, min, max, sum, logEvery }
