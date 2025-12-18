@@ -12,41 +12,25 @@ function transposeUneven<T>(table: T[][], defaultValue: T): T[][] {
     return [...Array(table[Symbol.iterator]().map(row => row.length).reduce(max)).keys().map(column => table.map(row => row[column] ?? defaultValue))]
 }
 
-function csv(table: unknown[][]) {
-    return table.map(e => e.join(',')).join('\n')
-}
-
 function tabulate(table: string[][]) {
     const widths = table[0].map((_, column) => table.map(row => row[column].length).reduce(max))
     return table.map(row => row.map((value, column) => value.padEnd(widths[column], ' ')).join('  ')).join('\n')
 }
 
+import parseCsv from 'neat-csv'
+import fs from 'fs'
+
+const csvInput = await parseCsv(fs.readFileSync('input.csv')) as {name: string, capacity: string, location: string}[]
+
+const people = csvInput.map(({name, capacity, location}) => ({name, capacity: parseInt(capacity), location}))
+
 
 // Test!
 
 const input: ArrangementInput = {
-    drivers: [
-        {name: 'driver0', capacity: 2},
-        {name: 'driver1', capacity: 3},
-    ],
-    passengers: [
-        {name: 'passenger0', capacity: 0},
-        {name: 'passenger1', capacity: 0},
-        {name: 'passenger2', capacity: 0},
-        {name: 'passenger3', capacity: 0},
-        {name: 'passenger4', capacity: 0},
-    ]
+    drivers: people.filter(e => e.capacity > 0),
+    passengers: people.filter(e => e.capacity == 0),
 }
 
-const grouping = new Map<Person, 'VDC' | 'Flagpoles'>([
-    [input.drivers[0], 'VDC'],
-    [input.drivers[1], 'Flagpoles'],
-    [input.passengers[0], 'VDC'],
-    [input.passengers[1], 'Flagpoles'],
-    [input.passengers[2], 'Flagpoles'],
-    [input.passengers[3], 'VDC'],
-    [input.passengers[4], 'Flagpoles'],
-])
-
-const result = bruteForce(input, new GroupingCriteria(person => grouping.get(person)!))
+const result = bruteForce(input, new GroupingCriteria(person => (person as any).location))
 console.log(tabulate(transposeUneven(result.map(car => [...occupantsOf(car).map(person => person.name)]), '')))
