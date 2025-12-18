@@ -5,7 +5,7 @@
 
 import { bruteForce } from "./algorithms.js";
 import { compileObjective, GroupingCriteria } from "./criteria.js";
-import { associateWith, distinct, max } from "./iterators.js";
+import { associateWith, max } from "./iterators.js";
 import { ArrangementInput, occupantsOf } from "./model.js";
 
 function transposeUneven<T>(table: T[][], defaultValue: T): T[][] {
@@ -43,7 +43,7 @@ const people = (await parseCsv<RawPerson>(fs.readFileSync('input.csv')))
 // Test!
 
 const input: ArrangementInput<Person> = {
-    drivers: people.filter(e => e.capacity > 0).reduce(associateWith(e => e.capacity), new Map()),
+    drivers: people.filter(e => e.capacity > 0).reduce(associateWith(e => e.capacity - 1), new Map()),
     passengers: people.filter(e => e.capacity == 0),
 }
 
