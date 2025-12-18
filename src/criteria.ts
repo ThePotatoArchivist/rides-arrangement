@@ -3,11 +3,11 @@ import { Arrangement, ArrangementInput, occupantsOf } from "./data/model.js";
 import { Criterion } from './data/objective.js';
 
 class GroupingCriterion<P, T extends string> extends Criterion<P> {
-    readonly personCount: number
+    readonly passengerCount: number
 
     constructor(input: ArrangementInput<P>, readonly groupFunction: (person: P) => T) {
         super()
-        this.personCount = input.drivers.size + input.passengers.length
+        this.passengerCount = input.passengers.length
     }
 
     getRawScore(arrangement: Arrangement<P>): number {
@@ -15,10 +15,10 @@ class GroupingCriterion<P, T extends string> extends Criterion<P> {
             .map(car => occupantsOf(car)
                 .map(person => this.groupFunction(person))
                 .reduce(distinct(), new Set())
-                .size
+                .size - 1
             )
             .reduce(sum)
-            / this.personCount
+            / this.passengerCount
     }
 }
 

@@ -49,7 +49,7 @@ const input: ArrangementInput<Person> = {
 
 const objective = compileObjective([
     [new GroupingCriterion(input, person => person.location), 1, true],
-    [new GroupingCriterion(input, person => person.locationGroup), 2, true],
+    [new GroupingCriterion(input, person => person.locationGroup), 1, true],
 ])
 const result = repeated(100, sloping)(input, objective)
 console.log(tabulate(transposeUneven(result.map(car => [...occupantsOf(car).map(person => person.name)]), '')))
