@@ -1,30 +1,30 @@
 import { distinct, sum } from "./iterators.js";
-import { Arrangement, ArrangementInput, occupantsOf, Person } from "./model.js";
+import { Arrangement, ArrangementInput, occupantsOf } from "./model.js";
 
-type ArrangementSolver = (input: ArrangementInput, objective: (arrangement: Arrangement) => number) => Arrangement
+type ArrangementSolver = <P>(input: ArrangementInput<P>, objective: (arrangement: Arrangement<P>) => number) => Arrangement<P>
 
-function compileObjective(criteria: [criterion: Criterion, weight: number, inverted: boolean][]): (arrangement: Arrangement) => number {
+function compileObjective<P>(criteria: [criterion: Criterion<P>, weight: number, inverted: boolean][]): (arrangement: Arrangement<P>) => number {
     return arrangement => criteria.values().map(([criterion, weight, inverted]) => criterion.getScore(arrangement, weight, inverted)).reduce(sum)
 }
 
-abstract class Criterion {
-    abstract getRawScore(arrangement: Arrangement): number
+abstract class Criterion<P> {
+    abstract getRawScore(arrangement: Arrangement<P>): number
     
-    getScore(arrangement: Arrangement, weight: number, inverted: boolean) {
+    getScore(arrangement: Arrangement<P>, weight: number, inverted: boolean) {
         const rawScore = this.getRawScore(arrangement)
         return weight * (inverted ? 1 - rawScore : rawScore)
     }
 }
 
-class GroupingCriteria<T extends string> extends Criterion {
+class GroupingCriteria<P, T extends string> extends Criterion<P> {
     readonly personCount: number
 
-    constructor(input: ArrangementInput, readonly groupFunction: (person: Person) => T) {
+    constructor(input: ArrangementInput<P>, readonly groupFunction: (person: P) => T) {
         super()
-        this.personCount = input.drivers.length + input.passengers.length
+        this.personCount = input.drivers.size + input.passengers.length
     }
 
-    getRawScore(arrangement: Arrangement): number {
+    getRawScore(arrangement: Arrangement<P>): number {
         return arrangement[Symbol.iterator]()
             .map(car => occupantsOf(car)
                 .map(person => this.groupFunction(person))

@@ -1,30 +1,18 @@
-interface Person {
-    name: string
-    // phone: number
-    /**
-     * 0 means needs a ride
-     * 1 means can drive self
-     * 2+ means can drive self & others
-     */
-    capacity: number
+interface Car<P> {
+    driver: P
+    passengers: P[]
 }
 
-
-interface Car {
-    driver: Person
-    passengers: Person[]
-}
-
-function* occupantsOf(car: Car): Generator<Person> {
+function* occupantsOf<P>(car: Car<P>): Generator<P> {
     yield car.driver
     yield* car.passengers
 }
 
-type Arrangement = Car[]
+type Arrangement<P> = Car<P>[]
 
-interface ArrangementInput {
-    drivers: Person[],
-    passengers: Person[],
+interface ArrangementInput<P> {
+    drivers: Map<P, number> // Capacity
+    passengers: P[]
 }
 
-export { Person, Car, Arrangement, ArrangementInput, occupantsOf }
+export { Car, Arrangement, ArrangementInput, occupantsOf }

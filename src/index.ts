@@ -5,8 +5,8 @@
 
 import { bruteForce } from "./algorithms.js";
 import { compileObjective, GroupingCriteria } from "./criteria.js";
-import { distinct, max } from "./iterators.js";
-import { ArrangementInput, occupantsOf, Person } from "./model.js";
+import { associateWith, distinct, max } from "./iterators.js";
+import { ArrangementInput, occupantsOf } from "./model.js";
 
 function transposeUneven<T>(table: T[][], defaultValue: T): T[][] {
     return Array(table.values().map(row => row.length).reduce(max)).keys().map(column => table.map(row => row[column] ?? defaultValue)).toArray()
@@ -20,15 +20,30 @@ function tabulate(table: string[][]) {
 import parseCsv from 'neat-csv'
 import fs from 'fs'
 
-const csvInput = await parseCsv(fs.readFileSync('input.csv')) as {name: string, capacity: string, location: string}[]
+interface Person {
+    name: string
+    // phone: number
+    /**
+     * 0 means needs a ride
+     * 1 means can drive self
+     * 2+ means can drive self & others
+     */
+    capacity: number
+    location: string
+}
 
-const people = csvInput.map(({name, capacity, location}) => ({name, capacity: parseInt(capacity), location}))
+type RawPerson = {
+    [_ in keyof Person]: string
+}
+
+const people = (await parseCsv<RawPerson>(fs.readFileSync('input.csv')))
+    .map<Person>(({name, capacity, location}) => ({name, capacity: parseInt(capacity), location}))
 
 
 // Test!
 
-const input: ArrangementInput = {
-    drivers: people.filter(e => e.capacity > 0),
+const input: ArrangementInput<Person> = {
+    drivers: people.filter(e => e.capacity > 0).reduce(associateWith(e => e.capacity), new Map()),
     passengers: people.filter(e => e.capacity == 0),
 }
 

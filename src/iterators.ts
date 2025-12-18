@@ -25,6 +25,13 @@ const min: Collector<number, number> = (previous, current) => Math.min(previous,
 const max: Collector<number, number> = (previous, current) => Math.max(previous, current)
 const sum: Collector<number, number> = (previous, current) => previous + current
 
+function associateWith<K, V>(mapper: (key: K) => V): Collector<K, Map<K, V>> {
+    return (previous, current) => {
+        previous.set(current, mapper(current))
+        return previous
+    }
+}
+
 function logEvery<T>(frequency: number): (value: T) => T {
     let iteration = 0
     return value => {
@@ -35,4 +42,4 @@ function logEvery<T>(frequency: number): (value: T) => T {
 }
 
 
-export { minBy, maxBy, compareBy, distinct, min, max, sum, logEvery }
+export { minBy, maxBy, compareBy, distinct, min, max, sum, associateWith, logEvery }

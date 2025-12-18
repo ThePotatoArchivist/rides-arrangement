@@ -1,6 +1,6 @@
 import { ArrangementSolver } from "./criteria.js";
 import { compareBy, logEvery, maxBy } from "./iterators.js";
-import { Car } from "./model.js";
+import { Arrangement, ArrangementInput, Car } from "./model.js";
 
 function* permutations<T>(values: T[]) {
     const indices = new Map(values.entries().map(([index, value]) => [value, index]))
@@ -44,21 +44,22 @@ function* combinations<T>(values: T[], size: number) {
     }
 }
 
-function* groups<T>(values: T[], sizes: number[], sizeIndex: number = 0): Generator<T[][]> {
-    if (sizeIndex >= sizes.length) {
+function* groups<T>(values: T[], sizes: number[], offset: number = 0): Generator<T[][]> {
+    if (offset >= sizes.length) {
         yield []
         return
     }
     
-    yield* combinations(values, sizes[sizeIndex])
-        .flatMap(car => groups(values.filter(e => !car.includes(e)), sizes, sizeIndex + 1)
+    yield* combinations(values, sizes[offset])
+        .flatMap(car => groups(values.filter(e => !car.includes(e)), sizes, offset + 1)
             .map(others => [car, ...others]))
 }
 
 const bruteForce: ArrangementSolver = (input, objective) => {
-    return groups(input.passengers, input.drivers.map(driver => driver.capacity))
+    const drivers = input.drivers.keys().toArray()
+    return groups(input.passengers, input.drivers.values().toArray())
             .map(logEvery(1000000))
-            .map(cars => cars.map<Car>((car, index) => ({ driver: input.drivers[index], passengers: car })))
+            .map(cars => cars.map((car, index) => ({ driver: drivers[index], passengers: car })))
             .reduce(maxBy(arrangement => objective(arrangement), cars => cars.map(({driver, passengers}) => ({driver, passengers: [...passengers]}))))
 }
 
