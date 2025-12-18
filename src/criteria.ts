@@ -16,7 +16,7 @@ abstract class Criterion<P> {
     }
 }
 
-class GroupingCriteria<P, T extends string> extends Criterion<P> {
+class GroupingCriterion<P, T extends string> extends Criterion<P> {
     readonly personCount: number
 
     constructor(input: ArrangementInput<P>, readonly groupFunction: (person: P) => T) {
@@ -36,4 +36,4 @@ class GroupingCriteria<P, T extends string> extends Criterion<P> {
     }
 }
 
-export { Criterion as Criteria, GroupingCriteria, ArrangementSolver, compileObjective }
+export { Criterion as Criteria, GroupingCriterion, ArrangementSolver, compileObjective }

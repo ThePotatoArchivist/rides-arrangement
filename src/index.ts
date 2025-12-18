@@ -4,7 +4,7 @@
 // Procedure to optimize
 
 import { bruteForce } from "./algorithms.js";
-import { compileObjective, GroupingCriteria } from "./criteria.js";
+import { compileObjective, GroupingCriterion } from "./criteria.js";
 import { associateWith, max } from "./iterators.js";
 import { ArrangementInput, occupantsOf } from "./model.js";
 
@@ -47,5 +47,5 @@ const input: ArrangementInput<Person> = {
     passengers: people.filter(e => e.capacity == 0),
 }
 
-const result = bruteForce(input, compileObjective([[new GroupingCriteria(input, person => (person as any).location), 1, true]]))
+const result = bruteForce(input, compileObjective([[new GroupingCriterion(input, person => (person as any).location), 1, true]]))
 console.log(tabulate(transposeUneven(result.map(car => [...occupantsOf(car).map(person => person.name)]), '')))
