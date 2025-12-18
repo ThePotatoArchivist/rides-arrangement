@@ -1,7 +1,9 @@
 import { distinct, sum } from "./iterators.js";
 import { Arrangement, ArrangementInput, occupantsOf } from "./model.js";
 
-type ArrangementSolver = <P>(input: ArrangementInput<P>, objective: (arrangement: Arrangement<P>) => number) => Arrangement<P>
+type ObjectiveFunction<P> = (arrangement: Arrangement<P>) => number
+
+type ArrangementSolver = <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => Arrangement<P>
 
 function compileObjective<P>(criteria: [criterion: Criterion<P>, weight: number, inverted: boolean][]): (arrangement: Arrangement<P>) => number {
     return arrangement => criteria.values().map(([criterion, weight, inverted]) => criterion.getScore(arrangement, weight, inverted)).reduce(sum)
@@ -36,4 +38,4 @@ class GroupingCriterion<P, T extends string> extends Criterion<P> {
     }
 }
 
-export { Criterion as Criteria, GroupingCriterion, ArrangementSolver, compileObjective }
+export { Criterion, GroupingCriterion, ArrangementSolver, ObjectiveFunction, compileObjective }

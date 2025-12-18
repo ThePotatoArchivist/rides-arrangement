@@ -32,7 +32,7 @@ function* combinations<T>(values: T[], size: number) {
         yield current
 
         const pivot = current.findLastIndex((value, index) => value != values[values.length - size + index]) // Key of current
-        if (pivot == -1) return
+        if (pivot === -1) return
         
         const pivotIndex = indices.get(current[pivot])! // key of values
         const nextCount = size - pivot // values.slice(pivotIndex + 1, pivotIndex + 1 + size - pivot)
@@ -53,4 +53,15 @@ function* groups<T>(values: T[], sizes: number[], offset: number = 0): Generator
             .map(others => [car, ...others]))
 }
 
-export { permutations, combinations, groups }
+function range(end: number): Generator<number>
+function range(start: number, end: number): Generator<number>
+function range(start: number, end: number, step: number): Generator<number>
+function* range(a: number, b?: number, step: number = 1): Generator<number> {
+    const start = b === undefined ? 0 : a
+    const end = b ?? a
+    const backwards = step < 0
+    for (let i = start; backwards ? i > end : i < end; i++)
+        yield i
+}
+
+export { permutations, combinations, groups, range }

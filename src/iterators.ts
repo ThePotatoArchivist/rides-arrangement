@@ -35,7 +35,7 @@ function associateWith<K, V>(mapper: (key: K) => V): Collector<K, Map<K, V>> {
 function logEvery<T>(frequency: number): (value: T) => T {
     let iteration = 0
     return value => {
-        if (iteration % frequency == 0) console.log(iteration)
+        if (iteration % frequency === 0) console.log(iteration)
         iteration++
         return value
     }
