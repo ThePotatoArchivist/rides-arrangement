@@ -53,7 +53,7 @@ function* groups<T>(values: T[], sizes: number[]): Generator<T[][]> {
     yield* combinations(values, sizes[0])
         .flatMap(car => {
             const remaining = values.filter(e => !car.includes(e))
-            return groups(remaining, sizes.slice(1)).map(others => [car, ...others])
+            return groups(remaining, sizes.slice(1)).map(others => [[...car], ...others])
         })
     }
 
