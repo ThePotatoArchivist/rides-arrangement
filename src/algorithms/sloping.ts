@@ -32,9 +32,7 @@ const sloping: ArrangementSolver = <P>(input: ArrangementInput<P>, objective: Ob
     let bestSwap: SwapRef<P> | undefined = undefined
     let bestScore = objective(arrangement)
     
-    let iterations = 0
     while (true) {
-        iterations++
         for (const [carA, carB] of combinations(arrangement, 2))
             for (let passengerA = 0; passengerA < carA.passengers.length; passengerA++)
                 for (let passengerB = 0; passengerB < carB.passengers.length; passengerB++) {
@@ -48,11 +46,8 @@ const sloping: ArrangementSolver = <P>(input: ArrangementInput<P>, objective: Ob
                     swap(swapRef)
                 }
 
-        if (bestSwap === undefined) {
-            console.log(`Completed in ${iterations} iterations`)
-            console.log(`Score: ${bestScore}`)
+        if (bestSwap === undefined)
             return arrangement
-        }
 
         swap(bestSwap)
         bestSwap = undefined
@@ -72,9 +67,6 @@ function repeated(attempts: number, solver: ArrangementSolver): ArrangementSolve
                 bestScore = score
             }
         }
-        
-        console.log(`Completed ${attempts} attempts`)
-        console.log(`Best Score: ${bestScore}`)
         
         return bestArrangement!
     } 
