@@ -29,6 +29,8 @@ function tabulate(table: string[][]) {
 
 // Data
 
+const FILENAME = 'input_large.csv'
+
 interface Person {
     name: string
     // phone: number
@@ -44,7 +46,7 @@ interface Person {
 
 type RawPerson = Record<keyof Person, string>
 
-const people = (await parseCsv<RawPerson>(fs.readFileSync('input.csv')))
+const people = (await parseCsv<RawPerson>(fs.readFileSync(FILENAME)))
     .map<Person>(raw => ({...raw, capacity: parseInt(raw.capacity)}))
 
 const input: ArrangementInput<Person> = {
