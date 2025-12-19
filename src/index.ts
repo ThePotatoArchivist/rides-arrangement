@@ -9,11 +9,10 @@ import { ArrangementInput, occupantsOf } from "./data/model.js";
 import parseCsv from 'neat-csv'
 import fs from 'fs'
 import { localSearch } from './algorithms/localSearch.js';
-import { chain, compileObjective, ConfiguredCriterion, map } from './data/objective.js';
-import { random } from './algorithms/random.js';
-import { best } from './algorithms/best.js';
+import { ArrangementSolver, compileObjective, ConfiguredCriterion } from './data/objective.js';
 import { greedySearch } from './algorithms/greedySearch.js';
 import { variations } from './algorithms/variations.js';
+import { best } from './algorithms/best.js';
 
 // Utils
 
@@ -60,14 +59,21 @@ const criteria: ConfiguredCriterion<Person>[] = [
 
 const objective = compileObjective(criteria)
 
-// const solver = best(random(100), localSearch)
-// const solver = greedySearch
-// const solver = chain(greedySearch, localSearch)
-const solver = best(map(variations(greedySearch), localSearch))
+const result =
+    // random(100)(input)
+    //     .map(localSearch(objective))
+    //     .reduce(best(objective))
 
-// Run
+    // greedySearch(input, objective)
 
-const result = solver(input, objective)
+    localSearch(objective)(greedySearch(input, objective))
+
+    // variations(greedySearch(input, objective))
+    //     .flatMap(variations)
+    //     .map(localSearch(objective))
+    //     .reduce(best(objective))
+
+// Results
 
 console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(({weight}) => weight).reduce(sum)}`)
 console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(person => person.name).toArray()), '')))

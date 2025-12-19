@@ -1,32 +1,34 @@
 import { combinations } from '../util/counting.js';
-import { ArrangementProcessor, ObjectiveFunction } from "../data/objective.js";
+import { ObjectiveFunction } from "../data/objective.js";
 import { Arrangement } from '../data/model.js';
 import { swap, SwapRef } from '../data/swap.js';
 
 
-const localSearch: ArrangementProcessor = <P>(arrangement: Arrangement<P>, objective: ObjectiveFunction<P>) => {
-    let bestSwap: SwapRef<P> | undefined = undefined
-    let bestScore = objective(arrangement)
-    
-    while (true) {
-        for (const [carA, carB] of combinations(arrangement, 2))
-            for (let passengerA = 0; passengerA < carA.passengers.length; passengerA++)
-                for (let passengerB = 0; passengerB < carB.passengers.length; passengerB++) {
-                    const swapRef: SwapRef<P> = { carA, passengerA, carB, passengerB }
-                    swap(swapRef)
-                    const score = objective(arrangement)
-                    if (score > bestScore) {
-                        bestSwap = swapRef
-                        bestScore = score
+function localSearch<P>(objective: ObjectiveFunction<P>): (arrangement: Arrangement<P>) => Arrangement<P> {
+    return (arrangement) => {
+        let bestSwap: SwapRef<P> | undefined = undefined
+        let bestScore = objective(arrangement)
+        
+        while (true) {
+            for (const [carA, carB] of combinations(arrangement, 2))
+                for (let passengerA = 0; passengerA < carA.passengers.length; passengerA++)
+                    for (let passengerB = 0; passengerB < carB.passengers.length; passengerB++) {
+                        const swapRef: SwapRef<P> = { carA, passengerA, carB, passengerB }
+                        swap(swapRef)
+                        const score = objective(arrangement)
+                        if (score > bestScore) {
+                            bestSwap = swapRef
+                            bestScore = score
+                        }
+                        swap(swapRef)
                     }
-                    swap(swapRef)
-                }
 
-        if (bestSwap === undefined)
-            return arrangement
+            if (bestSwap === undefined)
+                return arrangement
 
-        swap(bestSwap)
-        bestSwap = undefined
+            swap(bestSwap)
+            bestSwap = undefined
+        }
     }
 }
 
