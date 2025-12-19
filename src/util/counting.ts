@@ -31,7 +31,7 @@ function* combinations<T>(values: T[], size: number) {
         
         yield current
 
-        const pivot = current.findLastIndex((value, index) => value != values[values.length - size + index]) // Key of current
+        const pivot = current.findLastIndex((value, index) => value !== values[values.length - size + index]) // Key of current
         if (pivot === -1) return
         
         const pivotIndex = indices.get(current[pivot])! // key of values

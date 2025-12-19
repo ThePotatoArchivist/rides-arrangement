@@ -1,14 +1,14 @@
 import { groups } from '../util/counting.js'
 import { ArrangementSolver, ObjectiveFunction } from '../data/objective.js'
 import { logEvery, maxBy } from '../util/iterators.js'
-import { ArrangementInput } from '../data/model.js'
+import { ArrangementInput, copyArrangement } from '../data/model.js'
 
 const bruteForce: ArrangementSolver = <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => {
     const drivers = input.drivers.keys().toArray()
     return groups(input.passengers, input.drivers.values().toArray())
             .map(logEvery(1000000))
             .map(cars => cars.map((car, index) => ({ driver: drivers[index], passengers: car })))
-            .reduce(maxBy(arrangement => objective(arrangement), cars => cars.map(({driver, passengers}) => ({driver, passengers: [...passengers]}))))
+            .reduce(maxBy(arrangement => objective(arrangement), copyArrangement))
 }
 
 export { bruteForce }
