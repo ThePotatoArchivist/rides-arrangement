@@ -2,13 +2,25 @@ type Collector<T, U> = (previous: U, current: T) => U
 type Combiner<T> = Collector<T, T>
 
 function minBy<T>(getValue: (item: T) => number, copier?: (value: T) => T): Combiner<T> {
-    return (previous, current) => 
-        getValue(current) < getValue(previous) ? copier?.(current) ?? current : previous
+    let minValue = Number.MAX_VALUE
+    return (previous, current) => {
+        const score = getValue(current)
+        if (score >= minValue) return previous
+
+        minValue = score
+        return copier?.(current) ?? current
+    }
 }
 
 function maxBy<T>(getValue: (item: T) => number, copier?: (value: T) => T): Combiner<T> {
-    return (previous, current) => 
-        getValue(current) > getValue(previous) ? copier?.(current) ?? current : previous
+    let maxValue = -Number.MAX_VALUE
+    return (previous, current) => {
+        const score = getValue(current)
+        if (score <= maxValue) return previous
+
+        maxValue = score
+        return copier?.(current) ?? current
+    }
 }
 
 function compareBy<T>(getValue: (item: T) => number): (a: T, b: T) => number {

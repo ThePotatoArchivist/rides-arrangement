@@ -1,50 +1,32 @@
 import { combinations } from '../util/counting.js';
-import { ArrangementSolver, ObjectiveFunction } from "../data/objective.js";
-import { Arrangement, ArrangementInput, Car } from '../data/model.js';
+import { ArrangementProcessor, ObjectiveFunction } from "../data/objective.js";
+import { Arrangement } from '../data/model.js';
+import { swap, SwapRef } from '../data/swap.js';
 
 
-interface SwapRef<P> {
-    carA: Car<P>
-    passengerA: number
-    carB: Car<P>
-    passengerB: number
-}
-
-function swap<P>(ref: SwapRef<P>) {
-    const { carA, passengerA, carB, passengerB } = ref
+const localSearch: ArrangementProcessor = <P>(arrangement: Arrangement<P>, objective: ObjectiveFunction<P>) => {
+    let bestSwap: SwapRef<P> | undefined = undefined
+    let bestScore = objective(arrangement)
     
-    const temp = carA.passengers[passengerA]
-    carA.passengers[passengerA] = carB.passengers[passengerB]
-    carB.passengers[passengerB] = temp
-}
-
-function localSearch(initialArrangement: ArrangementSolver): ArrangementSolver {
-    return <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => {
-        const arrangement: Arrangement<P> = initialArrangement(input, objective)
-        
-        let bestSwap: SwapRef<P> | undefined = undefined
-        let bestScore = objective(arrangement)
-        
-        while (true) {
-            for (const [carA, carB] of combinations(arrangement, 2))
-                for (let passengerA = 0; passengerA < carA.passengers.length; passengerA++)
-                    for (let passengerB = 0; passengerB < carB.passengers.length; passengerB++) {
-                        const swapRef: SwapRef<P> = { carA, passengerA, carB, passengerB }
-                        swap(swapRef)
-                        const score = objective(arrangement)
-                        if (score > bestScore) {
-                            bestSwap = swapRef
-                            bestScore = score
-                        }
-                        swap(swapRef)
+    while (true) {
+        for (const [carA, carB] of combinations(arrangement, 2))
+            for (let passengerA = 0; passengerA < carA.passengers.length; passengerA++)
+                for (let passengerB = 0; passengerB < carB.passengers.length; passengerB++) {
+                    const swapRef: SwapRef<P> = { carA, passengerA, carB, passengerB }
+                    swap(swapRef)
+                    const score = objective(arrangement)
+                    if (score > bestScore) {
+                        bestSwap = swapRef
+                        bestScore = score
                     }
+                    swap(swapRef)
+                }
 
-            if (bestSwap === undefined)
-                return arrangement
+        if (bestSwap === undefined)
+            return arrangement
 
-            swap(bestSwap)
-            bestSwap = undefined
-        }
+        swap(bestSwap)
+        bestSwap = undefined
     }
 }
 

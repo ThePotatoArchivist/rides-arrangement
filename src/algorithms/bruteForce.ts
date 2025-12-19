@@ -8,7 +8,7 @@ const bruteForce: ArrangementSolver = <P>(input: ArrangementInput<P>, objective:
     return groups(input.passengers, input.drivers.values().toArray())
             .map(logEvery(1000000))
             .map(cars => cars.map((car, index) => ({ driver: drivers[index], passengers: car })))
-            .reduce(maxBy(arrangement => objective(arrangement), copyArrangement))
+            .reduce(maxBy(objective, copyArrangement))
 }
 
 export { bruteForce }

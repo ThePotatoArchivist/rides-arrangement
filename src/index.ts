@@ -9,11 +9,11 @@ import { ArrangementInput, occupantsOf } from "./data/model.js";
 import parseCsv from 'neat-csv'
 import fs from 'fs'
 import { localSearch } from './algorithms/localSearch.js';
-import { compileObjective, ConfiguredCriterion } from './data/objective.js';
-import { repeated } from './algorithms/repeated.js';
+import { chain, compileObjective, ConfiguredCriterion, map } from './data/objective.js';
 import { random } from './algorithms/random.js';
-import { cached } from './algorithms/cached.js';
+import { best } from './algorithms/best.js';
 import { greedySearch } from './algorithms/greedySearch.js';
+import { variations } from './algorithms/variations.js';
 
 // Utils
 
@@ -60,9 +60,10 @@ const criteria: ConfiguredCriterion<Person>[] = [
 
 const objective = compileObjective(criteria)
 
-const solver = repeated(100, localSearch(random))
+// const solver = best(random(100), localSearch)
 // const solver = greedySearch
-// const solver = localSearch(greedySearch)
+// const solver = chain(greedySearch, localSearch)
+const solver = best(map(variations(greedySearch), localSearch))
 
 // Run
 
