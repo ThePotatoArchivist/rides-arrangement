@@ -4,8 +4,8 @@ import { Arrangement } from '../data/model.js';
 import { swap, SwapRef } from '../data/swap.js';
 
 
-function localSearch<P>(objective: ObjectiveFunction<P>): (arrangement: Arrangement<P>) => Arrangement<P> {
-    return (arrangement) => {
+function localSearch<P>(objective: ObjectiveFunction<P>) {
+    return (arrangement: Arrangement<P>): Arrangement<P> => {
         let bestSwap: SwapRef<P> | undefined = undefined
         let bestScore = objective(arrangement)
         

@@ -1,4 +1,4 @@
-import { Arrangement, ArrangementInput } from './model.js'
+import { Arrangement } from './model.js'
 import { sum } from '../util/iterators.js'
 
 type ObjectiveFunction<P> = (arrangement: Arrangement<P>) => number
@@ -22,8 +22,8 @@ function ConfiguredCriterion<P>(criterion: Criterion<P>, weight: number, inverte
     return { criterion, weight, inverted }
 }
 
-function compileObjective<P>(criteria: ConfiguredCriterion<P>[]): ObjectiveFunction<P> {
+function createObjective<P>(criteria: ConfiguredCriterion<P>[]): ObjectiveFunction<P> {
     return arrangement => criteria.values().map(({ criterion, weight, inverted }) => criterion.getScore(arrangement, weight, inverted)).reduce(sum)
 }
 
-export { ObjectiveFunction, Criterion, ConfiguredCriterion, compileObjective }
+export { ObjectiveFunction, Criterion, ConfiguredCriterion, createObjective }

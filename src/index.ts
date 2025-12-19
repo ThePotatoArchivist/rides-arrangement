@@ -8,8 +8,8 @@ import { associateWith, max, range, sum } from "./util/iterators.js";
 import { ArrangementInput, occupantsOf } from "./data/model.js";
 import parseCsv from 'neat-csv'
 import fs from 'fs'
+import { createObjective, ConfiguredCriterion } from './data/objective.js';
 import { localSearch } from './algorithms/localSearch.js';
-import { compileObjective, ConfiguredCriterion } from './data/objective.js';
 import { greedySearch } from './algorithms/greedySearch.js';
 import { variations } from './algorithms/variations.js';
 import { best } from './algorithms/best.js';
@@ -59,7 +59,7 @@ const criteria: ConfiguredCriterion<Person>[] = [
     ConfiguredCriterion(new GroupingCriterion(input, person => person.locationGroup), 1, true),
 ]
 
-const objective = compileObjective(criteria)
+const objective = createObjective(criteria)
 
 const result =
     // random(100)(input)

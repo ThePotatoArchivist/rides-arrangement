@@ -1,4 +1,4 @@
-import { ArrangementInput } from '../data/model.js'
+import { Arrangement, ArrangementInput } from '../data/model.js'
 import { range } from '../util/iterators.js'
 
 function draw<T>(values: T[]) {
@@ -6,7 +6,7 @@ function draw<T>(values: T[]) {
 }
 
 function random(attempts: number) {
-    return <P>(input: ArrangementInput<P>) => range(attempts)
+    return <P>(input: ArrangementInput<P>): IteratorObject<Arrangement<P>> => range(attempts)
         .map(() => {
             const passengers = [...input.passengers]
 

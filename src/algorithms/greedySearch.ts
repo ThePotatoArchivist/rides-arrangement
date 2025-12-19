@@ -2,7 +2,7 @@ import { Arrangement, ArrangementInput, Car } from '../data/model.js';
 import { ObjectiveFunction } from '../data/objective.js';
 
 function greedySearch<P>(objective: ObjectiveFunction<P>) {
-    return (input: ArrangementInput<P>) => {
+    return (input: ArrangementInput<P>): Arrangement<P> => {
         const arrangement: Arrangement<P> = input.drivers.entries().map(([driver]) => ({ driver, passengers: [] })).toArray()
         
         for (const passenger of input.passengers) {
