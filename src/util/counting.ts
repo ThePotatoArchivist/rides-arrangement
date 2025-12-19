@@ -42,15 +42,16 @@ function* combinations<T>(values: T[], size: number) {
     }
 }
 
-function* groups<T>(values: T[], sizes: number[], offset: number = 0): Generator<T[][]> {
+function* groups<T>(values: T[], sizes: number[], result: T[][] = [], offset: number = 0): Generator<T[][]> {
     if (offset >= sizes.length) {
-        yield []
+        yield result
         return
     }
     
-    yield* combinations(values, sizes[offset])
-        .flatMap(car => groups(values.filter(e => !car.includes(e)), sizes, offset + 1)
-            .map(others => [car, ...others]))
+    for (const car of combinations(values, sizes[offset])) {
+        result[offset] = car
+        yield* groups(values.filter(e => !car.includes(e)), sizes, result, offset + 1)
+    }
 }
 
 export { permutations, combinations, groups }
