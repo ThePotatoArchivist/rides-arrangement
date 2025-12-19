@@ -1,8 +1,6 @@
-import { combinations } from '../util/counting.js';
 import { ObjectiveFunction } from "../data/objective.js";
 import { Arrangement } from '../data/model.js';
-import { swap, SwapRef } from '../data/swap.js';
-
+import { swap, SwapRef, generateSwaps } from '../data/swap.js';
 
 function localSearch<P>(objective: ObjectiveFunction<P>) {
     return (arrangement: Arrangement<P>): Arrangement<P> => {
@@ -10,18 +8,15 @@ function localSearch<P>(objective: ObjectiveFunction<P>) {
         let bestScore = objective(arrangement)
         
         while (true) {
-            for (const [carA, carB] of combinations(arrangement, 2))
-                for (let passengerA = 0; passengerA < carA.passengers.length; passengerA++)
-                    for (let passengerB = 0; passengerB < carB.passengers.length; passengerB++) {
-                        const swapRef: SwapRef<P> = { carA, passengerA, carB, passengerB }
-                        swap(swapRef)
-                        const score = objective(arrangement)
-                        if (score > bestScore) {
-                            bestSwap = swapRef
-                            bestScore = score
-                        }
-                        swap(swapRef)
-                    }
+            for (const swapRef of generateSwaps(arrangement)) {
+                swap(swapRef)
+                const score = objective(arrangement)
+                if (score > bestScore) {
+                    bestSwap = swapRef
+                    bestScore = score
+                }
+                swap(swapRef)
+            }
 
             if (bestSwap === undefined)
                 return arrangement
