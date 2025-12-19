@@ -3,8 +3,6 @@ import { sum } from '../util/iterators.js'
 
 type ObjectiveFunction<P> = (arrangement: Arrangement<P>) => number
 
-type ArrangementSolver = <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => Arrangement<P>
-
 abstract class Criterion<P> {
     abstract getRawScore(arrangement: Arrangement<P>): number
     
@@ -28,4 +26,4 @@ function compileObjective<P>(criteria: ConfiguredCriterion<P>[]): ObjectiveFunct
     return arrangement => criteria.values().map(({ criterion, weight, inverted }) => criterion.getScore(arrangement, weight, inverted)).reduce(sum)
 }
 
-export { ObjectiveFunction, ArrangementSolver, Criterion, ConfiguredCriterion, compileObjective }
+export { ObjectiveFunction, Criterion, ConfiguredCriterion, compileObjective }

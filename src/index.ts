@@ -9,10 +9,12 @@ import { ArrangementInput, occupantsOf } from "./data/model.js";
 import parseCsv from 'neat-csv'
 import fs from 'fs'
 import { localSearch } from './algorithms/localSearch.js';
-import { ArrangementSolver, compileObjective, ConfiguredCriterion } from './data/objective.js';
+import { compileObjective, ConfiguredCriterion } from './data/objective.js';
 import { greedySearch } from './algorithms/greedySearch.js';
 import { variations } from './algorithms/variations.js';
 import { best } from './algorithms/best.js';
+import { random } from './algorithms/random.js';
+import { allArrangements } from './algorithms/allArrangements.js';
 
 // Utils
 
@@ -64,14 +66,16 @@ const result =
     //     .map(localSearch(objective))
     //     .reduce(best(objective))
 
-    // greedySearch(input, objective)
+    // greedySearch(objective)(input)
 
-    localSearch(objective)(greedySearch(input, objective))
+    localSearch(objective)(greedySearch(objective)(input))
 
-    // variations(greedySearch(input, objective))
+    // variations(greedySearch(objective)(input))
     //     .flatMap(variations)
     //     .map(localSearch(objective))
     //     .reduce(best(objective))
+    
+    // allArrangements(input).reduce(best(objective))
 
 // Results
 
