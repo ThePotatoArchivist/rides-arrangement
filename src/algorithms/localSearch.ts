@@ -1,7 +1,6 @@
 import { combinations } from '../util/counting.js';
 import { ArrangementSolver, ObjectiveFunction } from "../data/objective.js";
 import { Arrangement, ArrangementInput, Car } from '../data/model.js';
-import { range } from '../util/iterators.js';
 
 
 interface SwapRef<P> {
@@ -19,7 +18,7 @@ function swap<P>(ref: SwapRef<P>) {
     carB.passengers[passengerB] = temp
 }
 
-function sloping(initialArrangement: ArrangementSolver): ArrangementSolver {
+function localSearch(initialArrangement: ArrangementSolver): ArrangementSolver {
     return <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => {
         const arrangement: Arrangement<P> = initialArrangement(input, objective)
         
@@ -49,4 +48,4 @@ function sloping(initialArrangement: ArrangementSolver): ArrangementSolver {
     }
 }
 
-export { sloping }
+export { localSearch }

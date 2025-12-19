@@ -8,7 +8,7 @@ import { associateWith, max, range, sum } from "./util/iterators.js";
 import { ArrangementInput, occupantsOf } from "./data/model.js";
 import parseCsv from 'neat-csv'
 import fs from 'fs'
-import { sloping } from './algorithms/sloping.js';
+import { localSearch } from './algorithms/localSearch.js';
 import { compileObjective, ConfiguredCriterion } from './data/objective.js';
 import { repeated } from './algorithms/repeated.js';
 import { random } from './algorithms/random.js';
@@ -55,7 +55,7 @@ const criteria: ConfiguredCriterion<Person>[] = [
 
 const objective = compileObjective(criteria)
 
-const result = repeated(100, sloping(random))(input, objective)
+const result = repeated(100, localSearch(random))(input, objective)
 
 console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(({weight}) => weight).reduce(sum)}`)
 console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(person => person.name).toArray()), '')))
