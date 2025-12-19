@@ -8,8 +8,10 @@ import { associateWith, max, range, sum } from "./util/iterators.js";
 import { ArrangementInput, occupantsOf } from "./data/model.js";
 import parseCsv from 'neat-csv'
 import fs from 'fs'
-import { repeated, sloping } from './algorithms/sloping.js';
+import { sloping } from './algorithms/sloping.js';
 import { compileObjective, ConfiguredCriterion } from './data/objective.js';
+import { repeated } from './algorithms/repeated.js';
+import { random } from './algorithms/random.js';
 
 function transposeUneven<T>(table: T[][], defaultValue: T): T[][] {
     return range(table.values().map(row => row.length).reduce(max)).map(column => table.map(row => row[column] ?? defaultValue)).toArray()
@@ -53,7 +55,7 @@ const criteria: ConfiguredCriterion<Person>[] = [
 
 const objective = compileObjective(criteria)
 
-const result = repeated(100, sloping)(input, objective)
+const result = repeated(100, sloping(random))(input, objective)
 
 console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(({weight}) => weight).reduce(sum)}`)
 console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(person => person.name).toArray()), '')))

@@ -4,10 +4,6 @@ import { Arrangement, ArrangementInput, Car } from '../data/model.js';
 import { range } from '../util/iterators.js';
 
 
-function draw<T>(values: T[]) {
-    return values.splice(Math.floor(values.length * Math.random()), 1)[0]
-}
-
 interface SwapRef<P> {
     carA: Car<P>
     passengerA: number
@@ -23,53 +19,34 @@ function swap<P>(ref: SwapRef<P>) {
     carB.passengers[passengerB] = temp
 }
 
-const sloping: ArrangementSolver = <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => {
-    const passengers = [...input.passengers]
-    const arrangement: Arrangement<P> = input.drivers.entries().map(([driver, capacity]) => (
-        { driver, passengers: range(capacity).map(() => draw(passengers)).toArray() }
-    )).toArray()
-    
-    let bestSwap: SwapRef<P> | undefined = undefined
-    let bestScore = objective(arrangement)
-    
-    while (true) {
-        for (const [carA, carB] of combinations(arrangement, 2))
-            for (let passengerA = 0; passengerA < carA.passengers.length; passengerA++)
-                for (let passengerB = 0; passengerB < carB.passengers.length; passengerB++) {
-                    const swapRef: SwapRef<P> = { carA, passengerA, carB, passengerB }
-                    swap(swapRef)
-                    const score = objective(arrangement)
-                    if (score > bestScore) {
-                        bestSwap = swapRef
-                        bestScore = score
+function sloping(initialArrangement: ArrangementSolver): ArrangementSolver {
+    return <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => {
+        const arrangement: Arrangement<P> = initialArrangement(input, objective)
+        
+        let bestSwap: SwapRef<P> | undefined = undefined
+        let bestScore = objective(arrangement)
+        
+        while (true) {
+            for (const [carA, carB] of combinations(arrangement, 2))
+                for (let passengerA = 0; passengerA < carA.passengers.length; passengerA++)
+                    for (let passengerB = 0; passengerB < carB.passengers.length; passengerB++) {
+                        const swapRef: SwapRef<P> = { carA, passengerA, carB, passengerB }
+                        swap(swapRef)
+                        const score = objective(arrangement)
+                        if (score > bestScore) {
+                            bestSwap = swapRef
+                            bestScore = score
+                        }
+                        swap(swapRef)
                     }
-                    swap(swapRef)
-                }
 
-        if (bestSwap === undefined)
-            return arrangement
+            if (bestSwap === undefined)
+                return arrangement
 
-        swap(bestSwap)
-        bestSwap = undefined
+            swap(bestSwap)
+            bestSwap = undefined
+        }
     }
 }
 
-function repeated(attempts: number, solver: ArrangementSolver): ArrangementSolver {
-    return <P>(input: ArrangementInput<P>, objective: ObjectiveFunction<P>) => {
-        let bestArrangement: Arrangement<P>
-        let bestScore = 0
-        
-        for (let i = 0; i < attempts; i++) {
-            const arrangement = solver(input, objective)
-            const score = objective(arrangement)
-            if (score > bestScore) {
-                bestArrangement = arrangement
-                bestScore = score
-            }
-        }
-        
-        return bestArrangement!
-    } 
-}
-
-export { sloping, repeated }
+export { sloping }
