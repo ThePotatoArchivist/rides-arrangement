@@ -14,8 +14,18 @@ abstract class Criterion<P> {
     }
 }
 
-function compileObjective<P>(criteria: [criterion: Criterion<P>, weight: number, inverted: boolean][]): ObjectiveFunction<P> {
-    return arrangement => criteria.values().map(([criterion, weight, inverted]) => criterion.getScore(arrangement, weight, inverted)).reduce(sum)
+interface ConfiguredCriterion<P> {
+    criterion: Criterion<P>
+    weight: number
+    inverted: boolean
 }
 
-export { ObjectiveFunction, ArrangementSolver, compileObjective, Criterion }
+function ConfiguredCriterion<P>(criterion: Criterion<P>, weight: number, inverted: boolean = false): ConfiguredCriterion<P> {
+    return { criterion, weight, inverted }
+}
+
+function compileObjective<P>(criteria: ConfiguredCriterion<P>[]): ObjectiveFunction<P> {
+    return arrangement => criteria.values().map(({ criterion, weight, inverted }) => criterion.getScore(arrangement, weight, inverted)).reduce(sum)
+}
+
+export { ObjectiveFunction, ArrangementSolver, Criterion, ConfiguredCriterion, compileObjective }

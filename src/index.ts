@@ -4,12 +4,12 @@
 // Procedure to optimize
 
 import { GroupingCriterion } from "./criteria.js";
-import { associateWith, max, range } from "./util/iterators.js";
+import { associateWith, max, range, sum } from "./util/iterators.js";
 import { ArrangementInput, occupantsOf } from "./data/model.js";
 import parseCsv from 'neat-csv'
 import fs from 'fs'
 import { repeated, sloping } from './algorithms/sloping.js';
-import { compileObjective } from './data/objective.js';
+import { compileObjective, ConfiguredCriterion } from './data/objective.js';
 
 function transposeUneven<T>(table: T[][], defaultValue: T): T[][] {
     return range(table.values().map(row => row.length).reduce(max)).map(column => table.map(row => row[column] ?? defaultValue)).toArray()
@@ -45,11 +45,15 @@ const input: ArrangementInput<Person> = {
     drivers: people.filter(e => e.capacity > 0).reduce(associateWith(e => e.capacity - 1), new Map()),
     passengers: people.filter(e => e.capacity === 0),
 }
+    
+const criteria: ConfiguredCriterion<Person>[] = [
+    ConfiguredCriterion(new GroupingCriterion(input, person => person.location), 1, true),
+    ConfiguredCriterion(new GroupingCriterion(input, person => person.locationGroup), 1, true),
+]
 
-const objective = compileObjective([
-    [new GroupingCriterion(input, person => person.location), 1, true],
-    [new GroupingCriterion(input, person => person.locationGroup), 1, true],
-])
+const objective = compileObjective(criteria)
+
 const result = repeated(100, sloping)(input, objective)
-console.log(`Score: ${objective(result)}`)
+
+console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(({weight}) => weight).reduce(sum)}`)
 console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(person => person.name).toArray()), '')))
