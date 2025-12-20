@@ -1,6 +1,6 @@
-import { distinct, sum, union } from "./util/iterators.js";
-import { Arrangement, ArrangementInput, occupantsOf } from "./data/model.js";
-import { Criterion } from './data/objective.js';
+import { distinct, sum, union } from "../util/iterators.js";
+import { Arrangement, ArrangementInput, occupantsOf } from "./model.js";
+import { Criterion } from './objective.js';
 
 class GroupingCriterion<P, T> extends Criterion<P> {
     readonly passengerCount: number
