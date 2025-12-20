@@ -2,7 +2,7 @@ import { distinct, sum, union } from "./util/iterators.js";
 import { Arrangement, ArrangementInput, occupantsOf } from "./data/model.js";
 import { Criterion } from './data/objective.js';
 
-class GroupingCriterion<P, T extends string> extends Criterion<P> {
+class GroupingCriterion<P, T> extends Criterion<P> {
     readonly passengerCount: number
 
     constructor(input: ArrangementInput<P>, readonly groupFunction: (person: P) => T) {
