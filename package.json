@@ -14,7 +14,9 @@
   "author": "ThePotatoArchivist",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "rollup -c",
+    "prepush": "npm run build",
+    "push": "clasp push",
     "start": "node dist/index.js"
   },
   "devDependencies": {
