@@ -90,6 +90,8 @@ function runTest() {
     ]
 
     const objective = createObjective(criteria)
+    
+    const start = Date.now()
 
     const result =
         // random(100)(input)
@@ -108,6 +110,8 @@ function runTest() {
         // allArrangements(input).reduce(best(objective))
 
     // Results
+    
+    console.log(`Completed in ${Date.now() - start} ms`)
 
     console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(({weight}) => weight).reduce(sum)}`)
     console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(person => person.name).toArray()), '')))
