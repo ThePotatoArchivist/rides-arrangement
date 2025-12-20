@@ -112,6 +112,3 @@ function runTest() {
     console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(({weight}) => weight).reduce(sum)}`)
     console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(person => person.name).toArray()), '')))
 }
-
-// Prevent rollup from treeshaking everything
-console.log(runTest.name)
