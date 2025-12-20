@@ -6,8 +6,6 @@
 import { GroupingCriterion } from "./criteria.js";
 import { associateWith, max, range, sum } from "./util/iterators.js";
 import { ArrangementInput, occupantsOf } from "./data/model.js";
-import parseCsv from 'neat-csv'
-import fs from 'fs'
 import { createObjective, ConfiguredCriterion } from './data/objective.js';
 import { localSearch } from './algorithms/localSearch.js';
 import { greedySearch } from './algorithms/greedySearch.js';
@@ -114,3 +112,6 @@ function runTest() {
     console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(({weight}) => weight).reduce(sum)}`)
     console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(person => person.name).toArray()), '')))
 }
+
+// Prevent rollup from treeshaking everything
+console.log(runTest.name)
