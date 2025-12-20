@@ -4,6 +4,7 @@
 # except the extensions…
 !appsscript.json
 !dist/*.js
+!src/**/*.html
 
 # ignore even valid files if in…
 .git/**
