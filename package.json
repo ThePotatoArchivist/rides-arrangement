@@ -14,8 +14,9 @@
   "author": "ThePotatoArchivist",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "rollup -c",
+    "prepush": "npm run build",
+    "push": "clasp push"
   },
   "devDependencies": {
     "@google/clasp": "^3.1.3",
