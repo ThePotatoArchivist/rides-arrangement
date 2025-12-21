@@ -7,7 +7,7 @@ function menuItem1() {
         .setWidth(400)
         .setHeight(300);
     SpreadsheetApp.getUi() // Or DocumentApp or SlidesApp or FormApp.
-        .showModalDialog(html, 'My custom dialog');
+        .showSidebar(html);
 }
 
 function onOpen(event: { authMode: GoogleAppsScript.Script.AuthMode }) {
