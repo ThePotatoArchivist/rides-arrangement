@@ -19,7 +19,7 @@ import { ifNaN, shuffle } from './util/misc.js';
 
 // Data
 
-const FILENAME = 'input.csv'
+const FILENAME = process.argv[2]
 
 type PersonKeys = 
     | 'First'
