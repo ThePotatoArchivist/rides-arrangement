@@ -4,10 +4,8 @@
 // Procedure to optimize
 
 import { GroupingCriterion } from "./data/criteria.js";
-import { associateWith, max, range, sum } from "./util/iterators.js";
+import { associateWith, sum } from "./util/iterators.js";
 import { ArrangementInput, occupantsOf } from "./data/model.js";
-import parseCsv from 'neat-csv'
-import fs from 'fs'
 import { createObjective, ConfiguredCriterion } from './data/objective.js';
 import { localSearch } from './algorithms/localSearch.js';
 import { greedySearch } from './algorithms/greedySearch.js';
@@ -16,6 +14,7 @@ import { best } from './algorithms/best.js';
 import { random } from './algorithms/random.js';
 import { allArrangements } from './algorithms/allArrangements.js';
 import { tabulate, transposeUneven } from './util/tables.js';
+import { readCsv } from './util/csv.js';
 
 // Data
 
@@ -34,10 +33,7 @@ interface Person {
     locationGroup: string
 }
 
-type RawPerson = Record<keyof Person, string>
-
-const people = (await parseCsv<RawPerson>(fs.readFileSync(FILENAME)))
-    .map<Person>(raw => ({...raw, capacity: parseInt(raw.capacity)}))
+const people = await readCsv<Person>(FILENAME, raw => ({...raw, capacity: parseInt(raw.capacity)}))
 
 const input: ArrangementInput<Person> = {
     drivers: people.filter(e => e.capacity > 0).reduce(associateWith(e => e.capacity - 1), new Map()),
@@ -71,5 +67,5 @@ const result =
 
 // Results
 
-console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(({weight}) => weight).reduce(sum)}`)
-console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(person => person.name).toArray()), '')))
+console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(c => c.weight).reduce(sum)}`)
+console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(p => p.name).toArray()), '')))
