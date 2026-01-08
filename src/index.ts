@@ -42,8 +42,7 @@ interface Person {
 const people = await readCsv<Person, PersonKeys>(FILENAME, raw => ({
     name: `${raw.First} ${raw.Last}`,
     phone: raw.Phone,
-    capacity: 
-        ifNaN(parseInt(raw['# in car']), raw['Need ride'] == 'No' ? 1 : 0),
+    capacity: ifNaN(parseInt(raw['# in car']), raw['Need ride'] == 'No' ? 1 : 0),
     location: raw.location,
 }))
 

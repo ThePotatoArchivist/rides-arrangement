@@ -4,7 +4,8 @@ import { ObjectiveFunction } from '../data/objective.js';
 function greedySearch<P>(
     objective: ObjectiveFunction<P>, 
     preprocess: (passengers: P[]) => P[] = p => p,
-    initial: (input: ArrangementInput<P>) => Arrangement<P> = input => input.drivers.entries().map(([driver]) => ({ driver, passengers: [] })).toArray()
+    initial: (input: ArrangementInput<P>) => Arrangement<P> = 
+        input => input.drivers.keys().map(driver => ({ driver, passengers: [] })).toArray()
 ) {
     return (input: ArrangementInput<P>): Arrangement<P> => {
         const arrangement: Arrangement<P> = initial(input)
