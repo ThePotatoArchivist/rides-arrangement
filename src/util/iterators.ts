@@ -37,16 +37,21 @@ function distinct<T>(): Collector<T, Set<T>> {
 const min: Combiner<number> = (previous, current) => Math.min(previous, current)
 const max: Combiner<number> = (previous, current) => Math.max(previous, current)
 const sum: Combiner<number> = (previous, current) => previous + current
+const count: Collector<unknown, number> = (previous) => previous + 1
 
 function union<T>(): Combiner<Set<T>> {
     return (previous, current) => previous.union(current)
 }
 
-function associateWith<K, V>(mapper: (key: K) => V): Collector<K, Map<K, V>> {
+function associate<T, K, V>(keyMapper: (value: T) => K, valueMapper: (value: T) => V): Collector<T, Map<K, V>> {
     return (previous, current) => {
-        previous.set(current, mapper(current))
+        previous.set(keyMapper(current), valueMapper(current))
         return previous
     }
+}
+
+function associateWith<K, V>(mapper: (key: K) => V): Collector<K, Map<K, V>> {
+    return associate(value => value, mapper)
 }
 
 function logEvery<T>(frequency: number): (value: T) => T {
@@ -69,4 +74,4 @@ function* range(a: number, b?: number, step: number = 1): Generator<number> {
         yield i
 }
 
-export { minBy, maxBy, compareBy, distinct, min, max, sum, union, associateWith, logEvery, range }
+export { minBy, maxBy, compareBy, distinct, min, max, sum, count, union, associate, associateWith, logEvery, range }

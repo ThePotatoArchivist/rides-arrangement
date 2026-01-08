@@ -3,9 +3,9 @@
 // Way to build a reward function from that
 // Procedure to optimize
 
-import { grouping } from "./data/criteria.js";
+import { grouping, similarity } from "./data/criteria.js";
 import { associateWith, distinct, sum } from "./util/iterators.js";
-import { ArrangementInput, occupantsOf } from "./data/model.js";
+import { ArrangementInput, copyArrangement, occupantsOf } from "./data/model.js";
 import { createObjective, ConfiguredCriterion } from './data/objective.js';
 import { localSearch } from './algorithms/localSearch.js';
 import { greedySearch } from './algorithms/greedySearch.js';
@@ -95,7 +95,27 @@ const result =
     
     // allArrangements(input).reduce(best(objective))
 
-// Results
+// Results 1
 
-console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(c => c.weight).reduce(sum)}`)
+console.log(`Score First: ${objective(result).toFixed(2)}/${criteria.values().map(c => c.weight).reduce(sum)}`)
 console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(p => p.name).toArray()), '')))
+
+// Later changes
+
+criteria.push(ConfiguredCriterion(similarity(result), 1, false))
+
+input.passengers.push({
+    name: 'NEWMAN',
+    capacity: 0,
+    location: 'Middle Earth',
+    phone: 'hi'
+})
+
+const objective2 = createObjective(criteria)
+
+const result2 = localSearch(objective2)(greedySearch(objective2, p => p, () => copyArrangement(result))(input))
+
+// Results 2
+
+console.log(`Score Third: ${objective2(result2).toFixed(2)}/${criteria.values().map(c => c.weight).reduce(sum)}`)
+console.log(tabulate(transposeUneven(result2.map(car => occupantsOf(car).map(p => p.name).toArray()), '')))
