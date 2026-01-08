@@ -1,18 +1,18 @@
 import { distinct, sum, union } from "../util/iterators.js";
-import { Arrangement, ArrangementInput, occupantsOf } from "./model.js";
+import { Arrangement, occupantsOf } from "./model.js";
 import { Criterion } from './objective.js';
 
-function grouping<P, T extends string>(input: ArrangementInput<P>, groupFunction: (person: P) => T): Criterion<P> {
-    const passengerCount = input.passengers.length
-
-    return (arrangement: Arrangement<P>): number => arrangement[Symbol.iterator]()
+function grouping<P, T extends string>(groupFunction: (person: P) => T): Criterion<P> {
+    return (arrangement: Arrangement<P>): number => arrangement.values()
         .map(car => occupantsOf(car)
             .map(person => groupFunction(person))
             .reduce(distinct(), new Set())
             .size - 1
         )
         .reduce(sum)
-        / passengerCount
+        / arrangement.values()
+            .map(car => car.passengers.length)
+            .reduce(sum, 0)
 }
 
 function separation<P>(separate: Set<P>): Criterion<P> {

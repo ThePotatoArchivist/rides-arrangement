@@ -43,8 +43,8 @@ const input: ArrangementInput<Person> = {
 // Configuration
     
 const criteria: ConfiguredCriterion<Person>[] = [
-    ConfiguredCriterion(grouping(input, person => person.location), 1, true),
-    ConfiguredCriterion(grouping(input, person => person.locationGroup), 1, true),
+    ConfiguredCriterion(grouping(person => person.location), 1, true),
+    ConfiguredCriterion(grouping(person => person.locationGroup), 1, true),
 ]
 
 const objective = createObjective(criteria)
