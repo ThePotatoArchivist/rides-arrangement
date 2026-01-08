@@ -2,7 +2,7 @@ import { distinct, sum, union } from "../util/iterators.js";
 import { Arrangement, occupantsOf } from "./model.js";
 import { Criterion } from './objective.js';
 
-function grouping<P, T extends string>(groupFunction: (person: P) => T): Criterion<P> {
+function grouping<P, T>(groupFunction: (person: P) => T): Criterion<P> {
     return (arrangement: Arrangement<P>): number => arrangement.values()
         .map(car => occupantsOf(car)
             .map(person => groupFunction(person))

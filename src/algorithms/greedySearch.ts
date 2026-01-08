@@ -1,11 +1,11 @@
 import { Arrangement, ArrangementInput, Car } from '../data/model.js';
 import { ObjectiveFunction } from '../data/objective.js';
 
-function greedySearch<P>(objective: ObjectiveFunction<P>) {
+function greedySearch<P>(objective: ObjectiveFunction<P>, preprocess: (passengers: P[]) => P[] = p => p) {
     return (input: ArrangementInput<P>): Arrangement<P> => {
         const arrangement: Arrangement<P> = input.drivers.entries().map(([driver]) => ({ driver, passengers: [] })).toArray()
         
-        for (const passenger of input.passengers) {
+        for (const passenger of preprocess(input.passengers)) {
             let bestCar: Car<P>
             let bestScore = 0
 

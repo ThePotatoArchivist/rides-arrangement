@@ -3,9 +3,9 @@ import parseCsv from 'neat-csv'
 
 type Raw<T> = Record<keyof T, string>
 
-async function readCsv<T>(filename: string, parse: (raw: Raw<T>) => T): Promise<T[]> {
-    return (await parseCsv<Raw<T>>(await readFile(filename)))
+async function readCsv<T, R extends keyof any = keyof T>(filename: string, parse: (raw: Record<R, string>) => T): Promise<T[]> {
+    return (await parseCsv<Record<R, string>>(await readFile(filename)))
         .map<T>(parse)
 }
 
-export { readCsv }
+export { readCsv, Raw }
