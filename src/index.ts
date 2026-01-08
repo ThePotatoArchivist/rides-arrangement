@@ -3,7 +3,7 @@
 // Way to build a reward function from that
 // Procedure to optimize
 
-import { GroupingCriterion } from "./data/criteria.js";
+import { grouping } from "./data/criteria.js";
 import { associateWith, sum } from "./util/iterators.js";
 import { ArrangementInput, occupantsOf } from "./data/model.js";
 import { createObjective, ConfiguredCriterion } from './data/objective.js';
@@ -43,8 +43,8 @@ const input: ArrangementInput<Person> = {
 // Configuration
     
 const criteria: ConfiguredCriterion<Person>[] = [
-    ConfiguredCriterion(new GroupingCriterion(input, person => person.location), 1, true),
-    ConfiguredCriterion(new GroupingCriterion(input, person => person.locationGroup), 1, true),
+    ConfiguredCriterion(grouping(input, person => person.location), 1, true),
+    ConfiguredCriterion(grouping(input, person => person.locationGroup), 1, true),
 ]
 
 const objective = createObjective(criteria)

@@ -2,39 +2,26 @@ import { distinct, sum, union } from "../util/iterators.js";
 import { Arrangement, ArrangementInput, occupantsOf } from "./model.js";
 import { Criterion } from './objective.js';
 
-class GroupingCriterion<P, T extends string> extends Criterion<P> {
-    readonly passengerCount: number
+function grouping<P, T extends string>(input: ArrangementInput<P>, groupFunction: (person: P) => T): Criterion<P> {
+    const passengerCount = input.passengers.length
 
-    constructor(input: ArrangementInput<P>, readonly groupFunction: (person: P) => T) {
-        super()
-        this.passengerCount = input.passengers.length
-    }
-
-    getRawScore(arrangement: Arrangement<P>): number {
-        return arrangement[Symbol.iterator]()
-            .map(car => occupantsOf(car)
-                .map(person => this.groupFunction(person))
-                .reduce(distinct(), new Set())
-                .size - 1
-            )
-            .reduce(sum)
-            / this.passengerCount
-    }
+    return (arrangement: Arrangement<P>): number => arrangement[Symbol.iterator]()
+        .map(car => occupantsOf(car)
+            .map(person => groupFunction(person))
+            .reduce(distinct(), new Set())
+            .size - 1
+        )
+        .reduce(sum)
+        / passengerCount
 }
 
-class SeparationCriterion<P> extends Criterion<P> {
-    constructor(readonly separate: Set<P>) {
-        super()
-    }
-
-    getRawScore(arrangement: Arrangement<P>): number {
-        return arrangement
-            .map(car => this.separate.intersection(new Set(occupantsOf(car))))
-            .filter(set => set.size > 1)
-            .reduce(union())
-            .size
-            / this.separate.size
-    }
+function separation<P>(separate: Set<P>): Criterion<P> {
+    return (arrangement: Arrangement<P>): number => arrangement
+        .map(car => separate.intersection(new Set(occupantsOf(car))))
+        .filter(set => set.size > 1)
+        .reduce(union())
+        .size
+        / separate.size
 }
 
-export { GroupingCriterion, SeparationCriterion };
+export { grouping, separation };

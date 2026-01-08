@@ -3,14 +3,7 @@ import { sum } from '../util/iterators.js'
 
 type ObjectiveFunction<P> = (arrangement: Arrangement<P>) => number
 
-abstract class Criterion<P> {
-    abstract getRawScore(arrangement: Arrangement<P>): number
-    
-    getScore(arrangement: Arrangement<P>, weight: number, inverted: boolean) {
-        const rawScore = this.getRawScore(arrangement)
-        return weight * (inverted ? 1 - rawScore : rawScore)
-    }
-}
+type Criterion<P> = (arrangement: Arrangement<P>) => number
 
 interface ConfiguredCriterion<P> {
     criterion: Criterion<P>
@@ -23,7 +16,10 @@ function ConfiguredCriterion<P>(criterion: Criterion<P>, weight: number, inverte
 }
 
 function createObjective<P>(criteria: ConfiguredCriterion<P>[]): ObjectiveFunction<P> {
-    return arrangement => criteria.values().map(({ criterion, weight, inverted }) => criterion.getScore(arrangement, weight, inverted)).reduce(sum)
+    return arrangement => criteria.values().map(({ criterion, weight, inverted }) => {
+        const rawScore = criterion(arrangement)
+        return weight * (inverted ? 1 - rawScore : rawScore)
+    }).reduce(sum)
 }
 
 export { ObjectiveFunction, Criterion, ConfiguredCriterion, createObjective }
