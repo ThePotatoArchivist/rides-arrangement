@@ -1,108 +1,63 @@
-// Data models to describe arrangements
-// Way to specify criteria
-// Way to build a reward function from that
-// Procedure to optimize
-
-import { GroupingCriterion } from "./data/criteria.js";
-import { associateWith, max, range, sum } from "./util/iterators.js";
-import { ArrangementInput, occupantsOf } from "./data/model.js";
-import { createObjective, ConfiguredCriterion } from './data/objective.js';
-import { localSearch } from './algorithms/localSearch.js';
-import { greedySearch } from './algorithms/greedySearch.js';
-import { variations } from './algorithms/variations.js';
-import { best } from './algorithms/best.js';
-import { random } from './algorithms/random.js';
-import { allArrangements } from './algorithms/allArrangements.js';
-import { tabulate, transposeUneven } from './util/tables.js';
-
-// Data
-
-interface Person {
-    name: string
-    // phone: number
-    /**
-     * 0 means needs a ride
-     * 1 means can drive self
-     * 2+ means can drive self & others
-     */
-    capacity: number
-    location: number
-    locationGroup: number
+function onHomepage(...args: unknown[]) {
+    console.log(args)
+    return createCatCard('test', true)
 }
 
-function runTest() {
-    const people: Person[] = [
-      { name: 'P1', capacity: 0, location: 0, locationGroup: 0 },
-      { name: 'P2', capacity: 5, location: 1, locationGroup: 1 },
-      { name: 'P3', capacity: 0, location: 1, locationGroup: 1 },
-      { name: 'P4', capacity: 1, location: 0, locationGroup: 0 },
-      { name: 'P5', capacity: 0, location: 2, locationGroup: 2 },
-      { name: 'P6', capacity: 0, location: 1, locationGroup: 1 },
-      { name: 'P7', capacity: 7, location: 2, locationGroup: 2 },
-      { name: 'P8', capacity: 0, location: 3, locationGroup: 2 },
-      { name: 'P9', capacity: 0, location: 4, locationGroup: 0 },
-      { name: 'P10', capacity: 0, location: 5, locationGroup: 2 },
-      { name: 'P11', capacity: 0, location: 1, locationGroup: 1 },
-      { name: 'P12', capacity: 0, location: 6, locationGroup: 2 },
-      { name: 'P13', capacity: 0, location: 0, locationGroup: 0 },
-      { name: 'P14', capacity: 0, location: 7, locationGroup: 0 },
-      { name: 'P15', capacity: 4, location: 1, locationGroup: 1 },
-      { name: 'P16', capacity: 4, location: 8, locationGroup: 0 },
-      { name: 'P17', capacity: 0, location: 9, locationGroup: 2 },
-      { name: 'P18', capacity: 0, location: 2, locationGroup: 2 },
-      { name: 'P19', capacity: 3, location: 1, locationGroup: 1 },
-      { name: 'P20', capacity: 0, location: 1, locationGroup: 1 },
-      { name: 'P21', capacity: 0, location: 2, locationGroup: 2 },
-      { name: 'P22', capacity: 4, location: 1, locationGroup: 1 },
-      { name: 'P23', capacity: 0, location: 7, locationGroup: 0 },
-      { name: 'P24', capacity: 5, location: 1, locationGroup: 1 },
-      { name: 'P25', capacity: 0, location: 1, locationGroup: 1 },
-      { name: 'P26', capacity: 0, location: 0, locationGroup: 0 },
-      { name: 'P27', capacity: 0, location: 5, locationGroup: 2 },
-      { name: 'P28', capacity: 0, location: 0, locationGroup: 0 },
-      { name: 'P29', capacity: 0, location: 1, locationGroup: 1 },
-      { name: 'P30', capacity: 0, location: 1, locationGroup: 1 },
-      { name: 'P31', capacity: 0, location: 1, locationGroup: 1 },
-      { name: 'P32', capacity: 0, location: 1, locationGroup: 1 },
-      { name: 'P33', capacity: 0, location: 1, locationGroup: 1 }
-    ]
+function createCatCard(text: string, isHomepage: boolean) {
+  // Explicitly set the value of isHomepage as false if null or undefined.
+  if (!isHomepage) {
+    isHomepage = false;
+  }
 
-    const input: ArrangementInput<Person> = {
-        drivers: people.filter(e => e.capacity > 0).reduce(associateWith(e => e.capacity - 1), new Map()),
-        passengers: people.filter(e => e.capacity === 0),
-    }
-        
-    // Configuration
-        
-    const criteria: ConfiguredCriterion<Person>[] = [
-        ConfiguredCriterion(new GroupingCriterion(input, person => person.location), 1, true),
-        ConfiguredCriterion(new GroupingCriterion(input, person => person.locationGroup), 1, true),
-    ]
+  // Use the "Cat as a service" API to get the cat image. Add a "time" URL
+  // parameter to act as a cache buster.
+  var now = new Date();
+  // Replace forward slashes in the text, as they break the CataaS API.
+  var caption = text.replace(/\//g, ' ');
+  var imageUrl =
+      Utilities.formatString('https://cataas.com/cat/says/%s?time=%s',
+          encodeURIComponent(caption), now.getTime());
+  var image = CardService.newImage()
+      .setImageUrl(imageUrl)
+      .setAltText('Meow')
 
-    const objective = createObjective(criteria)
-    
-    const start = Date.now()
+  // Create a button that changes the cat image when pressed.
+  // Note: Action parameter keys and values must be strings.
+  var action = CardService.newAction()
+      .setFunctionName('onChangeCat')
+      .setParameters({text: text, isHomepage: isHomepage.toString()});
+  var button = CardService.newTextButton()
+      .setText('Change cat')
+      .setOnClickAction(action)
+      .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
+  var buttonSet = CardService.newButtonSet()
+      .addButton(button);
 
-    const result =
-        // random(100)(input)
-        //     .map(localSearch(objective))
-        //     .reduce(best(objective))
+  // Create a footer to be shown at the bottom.
+  var footer = CardService.newFixedFooter()
+      .setPrimaryButton(CardService.newTextButton()
+          .setText('Powered by cataas.com')
+          .setOpenLink(CardService.newOpenLink()
+              .setUrl('https://cataas.com')));
 
-        // greedySearch(objective)(input)
+  // Assemble the widgets and return the card.
+  var section = CardService.newCardSection()
+      .addWidget(image)
+      .addWidget(buttonSet);
+  var card = CardService.newCardBuilder()
+      .addSection(section)
+      .setFixedFooter(footer);
 
-        localSearch(objective)(greedySearch(objective)(input))
+  if (!isHomepage) {
+    // Create the header shown when the card is minimized,
+    // but only when this card is a contextual card. Peek headers
+    // are never used by non-contexual cards like homepages.
+    var peekHeader = CardService.newCardHeader()
+      .setTitle('Contextual Cat')
+      .setImageUrl('https://www.gstatic.com/images/icons/material/system/1x/pets_black_48dp.png')
+      .setSubtitle(text);
+    card.setPeekCardHeader(peekHeader)
+  }
 
-        // variations(greedySearch(objective)(input))
-        //     .flatMap(variations)
-        //     .map(localSearch(objective))
-        //     .reduce(best(objective))
-        
-        // allArrangements(input).reduce(best(objective))
-
-    // Results
-    
-    console.log(`Completed in ${Date.now() - start} ms`)
-
-    console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(({weight}) => weight).reduce(sum)}`)
-    console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(person => person.name).toArray()), '')))
+  return card.build();
 }
