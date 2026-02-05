@@ -3,7 +3,7 @@
 // Way to build a reward function from that
 // Procedure to optimize
 
-import { grouping, similarity } from "./data/criteria.js";
+import { grouping, similarity, singlePeer } from "./data/criteria.js";
 import { associateWith, distinct, sum } from "./util/iterators.js";
 import { ArrangementInput, copyArrangement, occupantsOf } from "./data/model.js";
 import { createObjective, ConfiguredCriterion } from './data/objective.js';
@@ -22,29 +22,38 @@ import { ifNaN, shuffle } from './util/misc.js';
 const FILENAME = process.argv[2]
 
 type PersonKeys = 
-    | 'First'
-    | 'Last'
-    | 'Email'
-    | 'Phone'
-    | 'How heard about?'
-    | 'Need ride'
-    | 'Can drive'
-    | '# in car'
-    | 'location'
+   | 'Full Name'
+   | 'If you can drive, how many can you take?'
+   | 'Have you been to IV before?'
+   | 'If someone invited you, who was it?'
+   | 'Any other information you\'d like to tell us?'
 
 interface Person {
     name: string,
-    phone: string,
     capacity: number,
-    location: string,
+    new: boolean,
+    friendName: string,
+    friend: Person | undefined,
 }
 
-const people = await readCsv<Person, PersonKeys>(FILENAME, raw => ({
-    name: `${raw.First} ${raw.Last}`,
-    phone: raw.Phone,
-    capacity: ifNaN(parseInt(raw['# in car']), raw['Need ride'] == 'No' ? 1 : 0),
-    location: raw.location,
+const people = await readCsv<Person, PersonKeys>(FILENAME, ({
+    "Full Name": name, 
+    "If you can drive, how many can you take?": capacity,
+    "Have you been to IV before?": isNew,
+    "If someone invited you, who was it?": friend,
+}) => ({
+    name: name,
+    capacity: capacity.trim() === "" ? 0 : parseInt(capacity),
+    new: isNew === "Yes",
+    friendName: friend,
+    friend: undefined,
 }))
+
+for (const person of people) {
+    person.friend = people.find(other => other.name === person.friendName)
+}
+
+console.log(JSON.stringify(people))
 
 const input: ArrangementInput<Person> = {
     drivers: people.filter(e => e.capacity > 1).reduce(associateWith(e => e.capacity - 1), new Map()),
@@ -72,8 +81,8 @@ const locations: Record<string, string> = {
 }
     
 const criteria: ConfiguredCriterion<Person>[] = [
-    ConfiguredCriterion(grouping(person => person.location), 1, true),
-    ConfiguredCriterion(grouping(person => locations[person.location]), 1, true),
+    ConfiguredCriterion(grouping(person => person.new), 1, false),
+    ConfiguredCriterion(singlePeer(person => person.friend), 4, false),
 ]
 
 const objective = createObjective(criteria)
@@ -94,27 +103,5 @@ const result =
     
     // allArrangements(input).reduce(best(objective))
 
-// Results 1
-
-console.log(`Score First: ${objective(result).toFixed(2)}/${criteria.values().map(c => c.weight).reduce(sum)}`)
+console.log(`Score: ${objective(result).toFixed(2)}/${criteria.values().map(c => c.weight).reduce(sum)}`)
 console.log(tabulate(transposeUneven(result.map(car => occupantsOf(car).map(p => p.name).toArray()), '')))
-
-// Later changes
-
-criteria.push(ConfiguredCriterion(similarity(result), 1, false))
-
-input.passengers.push({
-    name: 'NEWMAN',
-    capacity: 0,
-    location: 'Middle Earth',
-    phone: 'hi'
-})
-
-const objective2 = createObjective(criteria)
-
-const result2 = localSearch(objective2)(greedySearch(objective2, p => p, () => copyArrangement(result))(input))
-
-// Results 2
-
-console.log(`Score Third: ${objective2(result2).toFixed(2)}/${criteria.values().map(c => c.weight).reduce(sum)}`)
-console.log(tabulate(transposeUneven(result2.map(car => occupantsOf(car).map(p => p.name).toArray()), '')))

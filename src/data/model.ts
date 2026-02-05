@@ -8,6 +8,10 @@ function* occupantsOf<P>(car: Car<P>): Generator<P> {
     yield* car.passengers
 }
 
+function occupantsIncludes<P>(car: Car<P>, occupant: P): boolean {
+    return car.driver === occupant || car.passengers.includes(occupant)
+}
+
 type Arrangement<P> = Car<P>[]
 
 function copyArrangement<P>(arrangement: Arrangement<P>) {
@@ -19,4 +23,4 @@ interface ArrangementInput<P> {
     passengers: P[]
 }
 
-export { Car, Arrangement, copyArrangement, ArrangementInput, occupantsOf }
+export { Car, Arrangement, copyArrangement, ArrangementInput, occupantsOf, occupantsIncludes }

@@ -1,5 +1,5 @@
 import { associate, count, distinct, sum, union } from "../util/iterators.js";
-import { Arrangement, Car, occupantsOf } from "./model.js";
+import { Arrangement, Car, occupantsIncludes, occupantsOf } from "./model.js";
 import { Criterion } from './objective.js';
 
 function grouping<P, T>(groupFunction: (person: P) => T): Criterion<P> {
@@ -46,4 +46,18 @@ function similarity<P>(original: Arrangement<P>): Criterion<P> {
     }
 }
 
-export { grouping, separation, similarity };
+function singlePeer<P>(peerFunction: (person: P) => P | undefined): Criterion<P> {
+    return arrangement => arrangement.values()
+        .flatMap(car => occupantsOf(car)
+            .map<number>(person => {
+                const peer = peerFunction(person)
+                return peer === undefined || occupantsIncludes(car, peer) ? 1 : 0
+            })
+        )
+        .reduce(sum)
+        / arrangement.values()
+            .map(car => car.passengers.length + 1)
+            .reduce(sum, 0)
+}
+
+export { grouping, separation, similarity, singlePeer };
