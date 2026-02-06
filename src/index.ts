@@ -22,14 +22,16 @@ import { ifNaN, shuffle } from './util/misc.js';
 const FILENAME = process.argv[2]
 
 type PersonKeys = 
-   | 'Full Name'
-   | 'If you can drive, how many can you take?'
-   | 'Have you been to IV before?'
-   | 'If someone invited you, who was it?'
-   | 'Any other information you\'d like to tell us?'
+    | 'Full Name'
+    | 'What year are you?'
+    | 'If you can drive, how many can you take?'
+    | 'Have you been to IV before?'
+    | 'If someone invited you, who was it?'
+    | 'Any other information you\'d like to tell us?'
 
 interface Person {
     name: string,
+    year: string,
     capacity: number,
     new: boolean,
     friendName: string,
@@ -38,14 +40,16 @@ interface Person {
 
 const people = await readCsv<Person, PersonKeys>(FILENAME, ({
     "Full Name": name, 
+    "What year are you?": year,
     "If you can drive, how many can you take?": capacity,
     "Have you been to IV before?": isNew,
-    "If someone invited you, who was it?": friend,
+    "If someone invited you, who was it?": friendName,
 }) => ({
-    name: name,
+    name,
+    year,
     capacity: capacity.trim() === "" ? 0 : parseInt(capacity),
     new: isNew === "Yes",
-    friendName: friend,
+    friendName,
     friend: undefined,
 }))
 
@@ -81,8 +85,9 @@ const locations: Record<string, string> = {
 }
     
 const criteria: ConfiguredCriterion<Person>[] = [
+    ConfiguredCriterion(grouping(person => person.year), 1, false),
     ConfiguredCriterion(grouping(person => person.new), 1, false),
-    ConfiguredCriterion(singlePeer(person => person.friend), 4, false),
+    ConfiguredCriterion(singlePeer(person => person.friend), 8, false),
 ]
 
 const objective = createObjective(criteria)

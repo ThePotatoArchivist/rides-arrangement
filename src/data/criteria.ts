@@ -51,13 +51,14 @@ function singlePeer<P>(peerFunction: (person: P) => P | undefined): Criterion<P>
         .flatMap(car => occupantsOf(car)
             .map<number>(person => {
                 const peer = peerFunction(person)
-                return peer === undefined || occupantsIncludes(car, peer) ? 1 : 0
+                return peer !== undefined && occupantsIncludes(car, peer) ? 1 : 0
             })
         )
         .reduce(sum)
-        / arrangement.values()
-            .map(car => car.passengers.length + 1)
-            .reduce(sum, 0)
+        / Math.max(1, arrangement.values()
+            .flatMap(occupantsOf)
+            .filter(person => peerFunction(person) !== undefined)
+            .reduce(count, 0))
 }
 
 export { grouping, separation, similarity, singlePeer };
