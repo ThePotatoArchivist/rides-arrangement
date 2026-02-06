@@ -25,12 +25,13 @@ function separation<P>(separate: Set<P>): Criterion<P> {
 }
 
 function similarity<P>(original: Arrangement<P>): Criterion<P> {
+    const originalCars = original.values()
+        .reduce(associate(
+            ({driver}) => driver, 
+            ({driver}) => original.find(car => car.driver == driver)
+        ), new Map<P, Car<P> | undefined>)
+
     return arrangement => {
-        const originalCars = original.values()
-            .reduce(associate(
-                ({driver}) => driver, 
-                ({driver}) => original.find(car => car.driver == driver)
-            ), new Map<P, Car<P> | undefined>)
         
         return arrangement.values()
             .map(car => {
