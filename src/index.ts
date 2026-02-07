@@ -25,6 +25,7 @@ type PersonKeys =
     | 'Full Name'
     | 'What year are you?'
     | 'If you can drive, how many can you take?'
+    | 'How hungry are you?'
     | 'Have you been to IV before?'
     | 'If someone invited you, who was it?'
     | 'Any other information you\'d like to tell us?'
@@ -33,6 +34,7 @@ interface Person {
     name: string,
     year: string,
     capacity: number,
+    hungry: string,
     new: boolean,
     friendName: string,
     friend: Person | undefined,
@@ -42,12 +44,14 @@ const people = await readCsv<Person, PersonKeys>(FILENAME, ({
     "Full Name": name, 
     "What year are you?": year,
     "If you can drive, how many can you take?": capacity,
+    "How hungry are you?": hungry,
     "Have you been to IV before?": isNew,
     "If someone invited you, who was it?": friendName,
 }) => ({
     name,
     year,
     capacity: capacity.trim() === "" ? 0 : parseInt(capacity),
+    hungry,
     new: isNew === "Yes",
     friendName,
     friend: undefined,
@@ -87,6 +91,7 @@ const locations: Record<string, string> = {
 const criteria: ConfiguredCriterion<Person>[] = [
     ConfiguredCriterion(grouping(person => person.year), 1, false),
     ConfiguredCriterion(grouping(person => person.new), 1, false),
+    ConfiguredCriterion(grouping(person => person.hungry), 4, true),
     ConfiguredCriterion(singlePeer(person => person.friend), 8, false),
 ]
 
@@ -97,9 +102,9 @@ const result =
     //     .map(localSearch(objective))
     //     .reduce(best(objective))
 
-    // greedySearch(objective)(input)
+    greedySearch(objective)(input)
 
-    localSearch(objective)(greedySearch(objective, p => p.toSorted(shuffle))(input))
+    // localSearch(objective)(greedySearch(objective, p => p.toSorted(shuffle))(input))
 
     // variations(greedySearch(objective)(input))
     //     .flatMap(variations)

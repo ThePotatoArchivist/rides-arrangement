@@ -12,7 +12,7 @@ function greedySearch<P>(
         const passengers = preprocess(input.passengers.filter(p => !arrangement.some(car => car.passengers.includes(p))))
         for (const passenger of passengers) {
             let bestCar: Car<P>
-            let bestScore = 0
+            let bestScore = -1
 
             for (const car of arrangement) {
                 if (car.passengers.length >= input.drivers.get(car.driver)!) continue

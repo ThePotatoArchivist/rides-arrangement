@@ -10,9 +10,9 @@ function grouping<P, T>(groupFunction: (person: P) => T): Criterion<P> {
             .size - 1
         )
         .reduce(sum)
-        / arrangement.values()
+        / Math.max(1, arrangement.values()
             .map(car => car.passengers.length)
-            .reduce(sum, 0)
+            .reduce(sum, 0))
 }
 
 function separation<P>(separate: Set<P>): Criterion<P> {
